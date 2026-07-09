@@ -6,11 +6,13 @@
          объявляем его здесь явно и не полагаемся на побочный эффект
          сторонних пакетов. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Требуется для точного будильника (Android 12+ API 31), используется как фоллбэк -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
         android:label="biorhythms_flutter"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"

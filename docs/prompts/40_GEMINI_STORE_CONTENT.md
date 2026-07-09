@@ -1,18 +1,25 @@
 # ✍️ Gemini — контент сторов под 4 цикла
 
-> Приложение «Биоритмы». **4 цикла**: Physical 23, Emotional 28, Intellectual 33, Intuitive 38. Пастельная палитра (мятный/лавандовый/персиковый/бирюзовый). Бесплатное + Premium. Локальное хранение. Оговорка: развлекательный характер.
+## ✅ Статус: ВЫПОЛНЕНО (все файлы созданы)
 
 ## Задача 1 — Google Play листинг (RU)
-Название (≤30), краткое (≤80), полное (≤4000). Подчеркни 4 цикла, приватность, Premium-триал. Категория: Здоровье и фитнес.
+✅ `store/assets/google_play_listing_ru.md`
+✅ `store/metadata/android/listing.txt`
 
 ## Задача 2 — App Store листинг (EN)
-App Name (≤30), Subtitle (≤30), Description (≤4000), Keywords (≤100 через запятую). Категория: Health & Fitness. Оговорка обязательна.
+✅ `store/assets/app_store_listing_en.md`
+✅ `store/metadata/ios/listing.txt`
 
 ## Задача 3 — Release Notes v0.2.0 (RU + EN)
-Список изменений: 4 цикла, экспорт PNG, совместимость, женский режим, биометрия, RU/EN.
+✅ `store/assets/release_notes_v0.2.0.md`
 
 ## Задача 4 — Скриншоты-описания (5 шт)
-Для каждого: заголовок-крючок + подзаголовок (RU+EN), что на экране, цвет фона. Покажи 4 цикла.
+✅ `store/assets/screenshots_descriptions.md`
+❌ **Сами скриншоты ещё не сделаны** — нужны реальные снимки экранов
 
 ## Задача 5 — Ответы на отзывы (3 шаблона)
-Положительный (5★), нейтральный (3★), негативный (1-2★). С упоминанием 4 циклов где уместно.
+✅ `store/assets/review_templates.md`
+
+## Дополнительно
+- `store/privacy/index.html` — веб-страница Privacy Policy (для хостинга, RU/EN)
+- `store/assets/screenshots.txt` — требования к размерам скриншотов

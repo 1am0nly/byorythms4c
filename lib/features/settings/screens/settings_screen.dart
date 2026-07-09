@@ -3,15 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:biorhythms_flutter/core/constants/strings.dart';
+import 'package:biorhythms_flutter/core/theme/app_colors.dart';
 import 'package:biorhythms_flutter/core/widgets/glass_card.dart';
+import 'package:biorhythms_flutter/domain/biorhythm/biorhythm_calculator.dart';
 import 'package:biorhythms_flutter/features/female_mode/providers/cycle_provider.dart';
 import 'package:biorhythms_flutter/features/home/providers/person_providers.dart';
 import 'package:biorhythms_flutter/features/home/providers/referral_provider.dart';
 import 'package:biorhythms_flutter/features/premium/providers/purchase_provider.dart';
 import 'package:biorhythms_flutter/features/privacy/providers/biometric_provider.dart';
+import 'package:biorhythms_flutter/features/settings/providers/cycle_visibility_provider.dart';
 import 'package:biorhythms_flutter/features/settings/providers/locale_provider.dart';
 import 'package:biorhythms_flutter/features/settings/providers/notification_provider.dart';
 import 'package:biorhythms_flutter/features/settings/providers/theme_provider.dart';
+import 'package:biorhythms_flutter/features/settings/services/notification_service.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -216,6 +220,47 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: Text(selectedName),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {},
+              ),
+              if (notifEnabled)
+                ListTile(
+                  title: Text('Тестовый пуш сейчас'),
+                  subtitle: Text('Проверить, что уведомления приходят'),
+                  leading: Icon(Icons.notifications_active, color: colorScheme.primary),
+                  onTap: () {
+                    ref.read(notificationServiceProvider).showTestNotificationNow();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Тестовое уведомление отправлено — проверь шторку')),
+                    );
+                  },
+                ),
+            ],
+          ),
+          _SettingsSection(
+            title: 'Отображаемые циклы',
+            children: [
+              Consumer(
+                builder: (context, ref, _) {
+                  final enabledCycles = ref.watch(enabledCyclesProvider).valueOrNull ?? BiorhythmType.values.toSet();
+                  return Column(
+                    children: BiorhythmType.values.map((type) {
+                      final isEnabled = enabledCycles.contains(type);
+                      final color = AppColors.colorForType(type);
+                      return SwitchListTile(
+                        title: Text(type.title),
+                        subtitle: Text(s.cycleVisibilitySub),
+                        value: isEnabled,
+                        activeColor: color,
+                        onChanged: (v) {
+                          if (v) {
+                            ref.read(enabledCyclesProvider.notifier).toggle(type);
+                          } else if (enabledCycles.length > 1) {
+                            ref.read(enabledCyclesProvider.notifier).toggle(type);
+                          }
+                        },
+                      );
+                    }).toList(),
+                  );
+                },
               ),
             ],
           ),

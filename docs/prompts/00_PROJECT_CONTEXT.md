@@ -1,19 +1,19 @@
 # Общий контекст проекта «Биоритмы» (общая часть для всех ИИ)
 
-## Актуальный статус на 08.07.2026
+## Актуальный статус на 10.07.2026
 - Проект находится в `C:\Users\a1am3\biorhythms_flutter`.
 - Полноценное приложение с 10 фичами: Home, Info, Settings, Premium, Female mode, Biometrics, Push notifications, Compatibility, Year overview, Statistics, Legal/About, Locale.
 - В домене **4 биоритма**: физический 23, эмоциональный 28, интеллектуальный 33, интуитивный 38 дней.
-- **Dart-файлы + `.g.dart`**, **17 тестов** (2 файла), **13+ маршрутов**.
+- **Dart-файлы + `.g.dart`**, **19 тестов** (3 файла), **13+ маршрутов**.
 - Последняя проверенная команда сборки: `C:\src\flutter\bin\flutter.bat build apk --debug`.
-- Результат: `flutter analyze` — 0 issues, `flutter test` — 17 passed, debug APK собирается.
-- Важно: `sqlite3_flutter_libs` предупреждает о желательном `compileSdk 35`, но локальный `android-35/android.jar` ломает resource linking. Пока **не поднимать compileSdk до 35** без переустановки/починки Android SDK/AGP.
+- Результат: `flutter analyze` — 0 issues, `flutter test` — 19 passed, `flutter build appbundle --release` — 27.1MB
+- `compileSdk = flutter.compileSdkVersion` (android-35 сломан в локальном SDK, поэтому откатились)
+- Релизная подпись: upload-keystore.jks + key.properties (в .gitignore)
+- `flutter_background_service`: удалён из зависимостей и AndroidManifest
 
-## Решение по уведомлениям (08.07.2026)
+## Решение по уведомлениям (10.07.2026)
 - Ежедневные пуши реализованы через `flutter_local_notifications` +
-  `zonedSchedule(matchDateTimeComponents: DateTimeComponents.time)` —
-  этого достаточно, ОС сама показывает уведомление каждый день без участия
-  Dart-кода в фоне.
+  `periodicallyShow(RepeatInterval.daily)` — повторяется каждые 24ч от момента включения.
 - **Workmanager удалён** — он не выполнял никакой полезной работы (только
   инициализировал плагин раз в час без показа уведомлений) и был мёртвым
   кодом, дублирующим уже рабочий механизм. Пакет `workmanager` и файл
@@ -27,13 +27,14 @@
   отражать актуальный день. Это принято ради простоты и надёжности —
   не пытаться "починить" это добавлением обратно фонового пересчёта без
   явного запроса на это.
+- Добавлена кнопка **«Тестовый пуш сейчас»** в Settings → Уведомления для диагностики.
 
 ## Правило для всех агентов
 - Не возвращать проект к формулировкам и UI про "3 цикла".
 - Все новые места, где перечисляются биоритмы, должны учитывать `BiorhythmType.intuitive`.
 - Не дублировать математику. Использовать `lib/domain/biorhythm/biorhythm_calculator.dart`.
 - Не возвращать в проект Workmanager без явного запроса и обоснования, зачем
-  простого `zonedSchedule` стало недостаточно.
+  простого `periodicallyShow` стало недостаточно.
 - После любых изменений запускать минимум `flutter analyze` и `flutter test`; для Android-изменений ещё `flutter build apk --debug`.
 
 ## Идентичность
@@ -48,7 +49,7 @@
 - **State management:** flutter_riverpod (Riverpod 2.x)
 - **Графики:** fl_chart
 - **Локальная БД:** drift (sqflite под капотом)
-- **Уведомления:** flutter_local_notifications (`zonedSchedule`, без Workmanager)
+- **Уведомления:** flutter_local_notifications (`periodicallyShow`, без Workmanager)
 - **Покупки:** in_app_purchase (App Store / Google Play)
 - **Биометрия:** local_auth
 - **Дата/время:** intl + timezone
@@ -67,13 +68,15 @@ lib/
 ├── core/
 │   ├── theme/                  # AppColors (4 цикла), AppTextTheme, light/dark (app_theme.dart)
 │   ├── utils/                  # форматтеры дат
-│   └── constants/
-│       ├── strings.dart        # AppStrings (ru) + AppStringsLocale / AppStrings.of(context)
-│       └── strings_en.dart     # английские константы
+│   ├── constants/
+│   │   ├── strings.dart        # AppStrings (ru) + AppStringsLocale / AppStrings.of(context)
+│   │   └── strings_en.dart     # английские константы
+│   └── widgets/
+│       └── glass_card.dart     # GlassCard — переиспользуемый Liquid Glass виджет
 ├── data/
 │   ├── models/                 # Person
 │   ├── database/
-│   │   ├── app_database.dart   # drift: Persons + SettingsTable
+│   │   ├── app_database.dart   # drift: Persons + SettingsTable (schemaVersion: 2)
 │   │   ├── person_dao.dart     # CRUD + Stream<List<Person>>
 │   │   ├── settings_dao.dart   # key-value get/set/watch
 │   │   └── providers.dart      # appDatabaseProvider, personDaoProvider, settingsDaoProvider
@@ -88,29 +91,30 @@ lib/
     │   │   ├── compatibility_screen.dart # совместимость 2 профилей (4 цикла)
     │   │   └── year_overview_screen.dart # календарь на год, цветовая карта
     │   ├── widgets/
-    │   │   ├── biorhythm_chart.dart     # fl_chart, динамический range (7/30), свайп по графику
-    │   │   ├── biorhythm_dots.dart      # 4 точки + isRising
-    │   │   ├── daily_summary.dart       # карточка с 4 бейджами
-    │   │   ├── statistics_card.dart     # фазы, дни до конца, прогресс-бар
-    │   │   ├── profile_selector.dart    # DropdownButton (value из selectedPersonProvider) + эмодзи-аватары
+    │   │   ├── biorhythm_chart.dart     # fl_chart, динамический range (7/30), свайп, интерактивная легенда
+    │   │   ├── biorhythm_dots.dart      # 4 точки + isRising (с учётом enabledCycles)
+    │   │   ├── daily_summary.dart       # карточка с 4 бейджами (с учётом enabledCycles)
+    │   │   ├── statistics_card.dart     # фазы, дни до конца, прогресс-бар (с учётом enabledCycles)
+    │   │   ├── profile_selector.dart    # DropdownButton (value из selectedPersonProvider) + эмодзи-аватара
     │   │   └── chart_export.dart        # PNG/Text share через RepaintBoundary
     │   └── providers/
-    │       ├── date_providers.dart      # focusDateProvider
+    │       ├── date_providers.dart      # focusDateProvider, chartRangeProvider
     │       ├── person_providers.dart    # selectedSnapshotProvider (watch'ит focusDate)
     │       ├── avatar_provider.dart     # 24 эмодзи-аватара
     │       └── referral_provider.dart   # реферальная механика + ReferralService
     ├── settings/               # ⚙ все настройки
     │   ├── screens/
-    │   │   ├── settings_screen.dart     # 8 секций: профиль, премиум, female, bio, push, referral, тема, юр.
+    │   │   ├── settings_screen.dart     # 9 секций: профиль, премиум, female, bio, push, cycles, referral, тема, юр.
     │   │   ├── notification_time_screen.dart
     │   │   └── profile_management_screen.dart
     │   ├── providers/
     │   │   ├── notification_provider.dart
     │   │   ├── theme_provider.dart      # AsyncNotifier<ThemeMode>
-    │   │   └── locale_provider.dart     # AsyncNotifier<Locale>, ру/EN переключение
+    │   │   ├── locale_provider.dart     # AsyncNotifier<Locale>, ру/EN переключение
+    │   │   └── cycle_visibility_provider.dart  # enabledCyclesProvider (AsyncNotifier + persist)
     │   └── services/
-    │       ├── notification_service.dart    # flutter_local_notifications + zonedSchedule + timezone
-    │       └── notification_scheduler.dart  # слушает настройки/профиль → пересчитывает и планирует пуш
+    │       ├── notification_service.dart    # flutter_local_notifications + periodicallyShow + timezone
+    │       └── notification_scheduler.dart  # слушает настройки/профиль → планирует пуш
     ├── info/                   # ℹ энциклопедия биоритмов
     │   ├── screens/
     │   │   ├── info_screen.dart
@@ -178,6 +182,7 @@ lib/
 4. ✅ **День 4** — Юридический блок + ассеты сторов
 5. ✅ **День 5** — Полировка + локализация ru/en + UX-улучшения
 6. ✅ **День 6** — Premium/paywall фиксы (реальная длительность покупки, биометрия с повтором, свайп по графику) + удаление мёртвого Workmanager-кода
+7. ✅ **День 7** — Liquid Glass redesign (home/paywall/settings), DB-миграции, widget-тесты, переключатели циклов, иконка «Квантовая волна», тестовый пуш
 
 ## Что осталось до публикации
 - Реальные скриншоты для стора (пока заглушки в `store/assets/screenshots.txt`)
@@ -186,6 +191,7 @@ lib/
 - Release-подпись APK/AAB
 - Решение вопроса `compileSdk 35`
 - CI/CD (Codemagic / GitHub Actions)
+- Контент сторов: описания, скриншоты, release notes (Gemini)
 
 ## Принцип дизайна главного экрана
 **Чистый и минималистичный.** На главном — только:
@@ -196,3 +202,12 @@ lib/
 - bottom nav: «Дом» / «Инфо»
 
 Всё остальное (добавить человека, время пуша, тема, EULA) — в Настройках.
+
+## Новые возможности (10.07.2026)
+- **Переключатели циклов** (`enabledCyclesProvider`): пользователь может скрывать/показывать любой из 4 циклов на графике, в сводке, в точках и в статистике. Настройка сохраняется в БД (`enabledCycles` JSON). В настройках — секция «Отображаемые циклы» со свитчами.
+- **Интерактивная легенда графика**: тап по строке легенды скрывает/показывает соответствующую линию. Неактивные циклы — opacity 0.3, зачёркнутый текст.
+- **Подписи оси X**: для free (15 дней) шаг 2 дня, для premium (61 день) шаг 8 дней, `reservedSize: 36` — подписи не слипаются.
+- **Иконка «Квантовая волна»**: squircle + 4 переплетающиеся синусоиды в 4 цветах циклов, glow-эффект. Android adaptive icon (foreground/background) + iOS все размеры.
+- **Тестовый пуш**: кнопка в Settings → Уведомления → «Тестовый пуш сейчас» для диагностики доставки.
+- **DB-миграция**: `schemaVersion: 2` + пустой `MigrationStrategy.onUpgrade` — заготовка на будущее.
+- **Widget-тесты**: `test/home_4_cycles_test.dart` проверяет рендер всех 4 циклов в DailySummary и BiorhythmDots.

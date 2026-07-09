@@ -1,18 +1,26 @@
-name=BioRhythms: Energy Tracker
-subtitle=Physical, Emotional, Intellectual & Intuitive Cycles
+name=Biorhythms: 4 Cycles of Life
+subtitle=Track 4 Biorhythms & Harmony
 description=
-Optimize your daily schedule with BioRhythms. Using mathematical models (23, 28, 33, and 38-day cycles), BioRhythms provides an estimate of your physical, emotional, intellectual, and intuitive energy levels.
+Discover the hidden rhythms of your body and mind with the "Biorhythms" app. Our advanced tool helps you decode your internal biological clock, predict energy peaks and drops, and align your daily activities with your natural flows.
 
-FEATURES:
-• Interactive 7/30-day chart
-• Four cycles: Physical, Emotional, Intellectual, Intuitive
-• Critical day detection
-• Multiple profiles
-• Female cycle tracking
-• Daily push notifications
-• Chart export (PNG/PDF)
-• Biometric profile protection
-• Partner compatibility
-• 100% private — all data stays on your device
+Unlike outdated trackers, we monitor 4 key life cycles:
+• Physical (23 days) — stamina, energy, strength, and coordination.
+• Emotional (28 days) — mood, sensitivity, creativity, and empathy.
+• Intellectual (33 days) — logic, concentration, memory, and learning capacity.
+• Intuitive (38 days) — sixth sense, unconscious insights, and split-second decisions.
+
+KEY FEATURES:
+• Interactive Biorhythm Chart: Beautifully visualize your daily curves. Swipe for 7 or 30 day views. Interactive legend toggles.
+• Compatibility Mode: Match charts with a partner, friend, or coworker.
+• Year Overview & Stats: View your entire year at a glance with color-coded maps.
+• Female Mode (Premium): Integrated menstrual cycle calendar synced with biorhythms.
+• Daily Smart Notifications: Gentle daily push with your current rhythm summary.
+• Chart Export: Share high-quality PNG images of your charts.
+
+TOTAL PRIVACY & BIOMETRIC LOCK:
+All data stays strictly on your device. No servers, no trackers. Premium Biometric Authentication (Face ID / Touch ID).
+
+LIQUID GLASS DESIGN:
+Fluid, minimalist UI with pastel aesthetics. Beautiful in both Light and Dark modes.
 
 *For entertainment purposes only. This application does not provide medical advice.*

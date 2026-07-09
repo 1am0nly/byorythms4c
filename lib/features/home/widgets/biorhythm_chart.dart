@@ -6,6 +6,7 @@ import 'package:biorhythms_flutter/domain/biorhythm/biorhythm_calculator.dart';
 import 'package:biorhythms_flutter/features/home/providers/person_providers.dart';
 import 'package:biorhythms_flutter/features/home/providers/date_providers.dart';
 import 'package:biorhythms_flutter/features/premium/providers/purchase_provider.dart';
+import 'package:biorhythms_flutter/features/settings/providers/cycle_visibility_provider.dart';
 
 class BiorhythmChart extends ConsumerWidget {
   final GlobalKey? repaintKey;
@@ -18,6 +19,7 @@ class BiorhythmChart extends ConsumerWidget {
     final focusDate = ref.watch(focusDateProvider);
     final chartRange = ref.watch(chartRangeProvider);
     final theme = Theme.of(context);
+    final enabledCycles = ref.watch(enabledCyclesProvider).valueOrNull ?? BiorhythmType.values.toSet();
 
     if (person == null) return const SizedBox.shrink();
 
@@ -38,7 +40,10 @@ class BiorhythmChart extends ConsumerWidget {
     // Premium-диапазоне (±30 дней = 61 точка) они слипаются в нечитаемую
     // кашу — особенно заметно на экспортированном PNG, где нет клиппинга
     // экрана и весь текст остаётся впечатан в картинку.
-    final labelInterval = (totalDays / 15).ceil().clamp(1, totalDays).toDouble();
+    // Для free (±7 дней = 15 точек) шаг 2 дня, для premium (±30 дней = 61 точка) — шаг 8 дней.
+    final labelInterval = chartRange > 7
+        ? (totalDays / 8).ceil().clamp(5, totalDays).toDouble()
+        : (totalDays / 10).ceil().clamp(2, totalDays).toDouble();
 
     Widget chart = Container(
       // ВАЖНО: явный фон нужен не только для UI, но и для корректного
@@ -53,7 +58,13 @@ class BiorhythmChart extends ConsumerWidget {
           // Легенда нужна, чтобы график был понятен без контекста
           // приложения — особенно важно для расшаренного PNG, который
           // может увидеть человек, никогда не открывавший «Биоритмы».
-          _ChartLegend(theme: theme),
+          _ChartLegend(
+            theme: theme,
+            enabledCycles: enabledCycles,
+            onToggle: (type) {
+              ref.read(enabledCyclesProvider.notifier).toggle(type);
+            },
+          ),
           const SizedBox(height: 8),
           Expanded(
             child: LineChart(
@@ -91,7 +102,7 @@ class BiorhythmChart extends ConsumerWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       interval: labelInterval,
-                      reservedSize: 24,
+                      reservedSize: 36,
                       getTitlesWidget: (value, meta) {
                         final index = value.toInt() + chartRange;
                         if (index < 0 || index >= snapshots.length) {
@@ -140,6 +151,7 @@ class BiorhythmChart extends ConsumerWidget {
                     getTooltipItems: (touchedSpots) {
                       return touchedSpots.map((spot) {
                         final type = BiorhythmType.values[spot.barIndex];
+                        if (!enabledCycles.contains(type)) return null;
                         final sign = spot.y >= 0 ? '+' : '';
                         return LineTooltipItem(
                           '${type.title}: $sign${spot.y.round()}%',
@@ -149,7 +161,7 @@ class BiorhythmChart extends ConsumerWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         );
-                      }).toList();
+                      }).whereType<LineTooltipItem>().toList();
                     },
                   ),
                 ),
@@ -163,7 +175,9 @@ class BiorhythmChart extends ConsumerWidget {
                     ),
                   ],
                 ),
-                lineBarsData: BiorhythmType.values.map((type) {
+                lineBarsData: BiorhythmType.values
+                    .where((type) => enabledCycles.contains(type))
+                    .map((type) {
                   final color = AppColors.colorForType(type);
                   return LineChartBarData(
                     spots: snapshots.asMap().entries.map((entry) {
@@ -205,10 +219,17 @@ class BiorhythmChart extends ConsumerWidget {
 
 /// Легенда с названиями циклов и их цветами — делает график понятным
 /// без контекста приложения (важно для экспортированного PNG).
+/// Интерактивна: тап по строке скрывает/показывает цикл.
 class _ChartLegend extends StatelessWidget {
   final ThemeData theme;
+  final Set<BiorhythmType> enabledCycles;
+  final void Function(BiorhythmType) onToggle;
 
-  const _ChartLegend({required this.theme});
+  const _ChartLegend({
+    required this.theme,
+    required this.enabledCycles,
+    required this.onToggle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -218,27 +239,38 @@ class _ChartLegend extends StatelessWidget {
       runSpacing: 4,
       children: BiorhythmType.values.map((type) {
         final color = AppColors.colorForType(type);
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
+        final isEnabled = enabledCycles.contains(type);
+        return InkWell(
+          onTap: () => onToggle(type),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: isEnabled ? color : color.withOpacity(0.3),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  type.title,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isEnabled
+                        ? theme.colorScheme.onSurfaceVariant
+                        : theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+                    fontWeight: FontWeight.w500,
+                    decoration: isEnabled ? TextDecoration.none : TextDecoration.lineThrough,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 4),
-            Text(
-              type.title,
-              style: TextStyle(
-                fontSize: 11,
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+          ),
         );
       }).toList(),
     );

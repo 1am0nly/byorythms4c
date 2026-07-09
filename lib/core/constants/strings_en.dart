@@ -49,6 +49,7 @@ class AppStringsEn {
   static const String phaseRising = 'Rising';
   static const String phaseFalling = 'Falling';
   static const String criticalDay = 'Critical Day!';
+  static const String cycleVisibilitySub = 'Show on chart and summary';
   static const String currentProfile = 'Current Profile';
   static const String profileSection = 'Profile';
   static const String compatibilitySub = 'Compare biorhythms with a partner';

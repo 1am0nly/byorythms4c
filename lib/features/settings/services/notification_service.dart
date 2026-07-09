@@ -151,19 +151,7 @@ class NotificationService {
     }
   }
 
-  Future<void> cancelNotification(int id) async {
-    await _plugin.cancel(id);
-  }
-
-  Future<void> cancelAll() async {
-    await _plugin.cancelAll();
-  }
-
-  /// ДИАГНОСТИЧЕСКИЙ метод — показывает уведомление немедленно, без
-  /// планирования. Оставлен для дальнейшей диагностики на новых
-  /// устройствах при необходимости. Можно вызвать вручную из кода при
-  /// отладке (кнопка в settings_screen.dart убрана после подтверждения
-  /// диагноза, но метод оставлен).
+  /// Показывает уведомление немедленно (для тестов).
   Future<void> showTestNotificationNow() async {
     await initialize();
     debugPrint('[NotificationService] showTestNotificationNow() called');
@@ -188,6 +176,14 @@ class NotificationService {
       details,
     );
     debugPrint('[NotificationService] showTestNotificationNow() completed — check status bar NOW');
+  }
+
+  Future<void> cancelNotification(int id) async {
+    await _plugin.cancel(id);
+  }
+
+  Future<void> cancelAll() async {
+    await _plugin.cancelAll();
   }
 
   String buildNotificationBody(

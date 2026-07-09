@@ -81,6 +81,7 @@ class AppStringsLocale {
   String get phaseRising => _isEn ? 'Rising' : 'Подъём';
   String get phaseFalling => _isEn ? 'Falling' : 'Спад';
   String get criticalDay => _isEn ? 'Critical Day!' : 'Критический день!';
+  String get cycleVisibilitySub => _isEn ? 'Show on chart and summary' : 'Показывать на графике и в сводке';
   String get currentProfile => _isEn ? 'Current Profile' : 'Текущий профиль';
   String get profileSection => _isEn ? 'Profile' : 'ПРОФИЛЬ';
   String get compatibilitySub => _isEn ? 'Compare biorhythms with a partner' : 'Сравнение биоритмов с партнёром';

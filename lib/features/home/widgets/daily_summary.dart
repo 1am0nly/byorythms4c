@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:biorhythms_flutter/core/theme/app_colors.dart';
+import 'package:biorhythms_flutter/core/widgets/glass_card.dart';
 import 'package:biorhythms_flutter/domain/biorhythm/biorhythm_calculator.dart';
 import 'package:biorhythms_flutter/features/home/providers/person_providers.dart';
 import 'package:biorhythms_flutter/features/home/providers/date_providers.dart';
+import 'package:biorhythms_flutter/features/settings/providers/cycle_visibility_provider.dart';
 
 class DailySummary extends ConsumerWidget {
   const DailySummary({super.key});
@@ -12,6 +14,7 @@ class DailySummary extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final person = ref.watch(selectedPersonProvider);
     final focusDate = ref.watch(focusDateProvider);
+    final enabledCycles = ref.watch(enabledCyclesProvider).valueOrNull ?? BiorhythmType.values.toSet();
     if (person == null) return const SizedBox.shrink();
 
     final snapshot = BiorhythmCalculator.calculate(
@@ -20,26 +23,30 @@ class DailySummary extends ConsumerWidget {
     );
 
     final theme = Theme.of(context);
-    return Wrap(
-      alignment: WrapAlignment.spaceAround,
-      runSpacing: 10,
-      spacing: 12,
-      children: BiorhythmType.values.map((type) {
-        final value = switch (type) {
-          BiorhythmType.physical => snapshot.physical,
-          BiorhythmType.emotional => snapshot.emotional,
-          BiorhythmType.intellectual => snapshot.intellectual,
-          BiorhythmType.intuitive => snapshot.intuitive,
-        };
-        final color = AppColors.colorForType(type);
-        return _BiorhythmBadge(
-          label: type.title,
-          value: value.percent.round(),
-          color: color,
-          isCritical: value.isCritical,
-          textTheme: theme.textTheme,
-        );
-      }).toList(),
+    return GlassCard(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Wrap(
+        alignment: WrapAlignment.spaceAround,
+        runSpacing: 10,
+        spacing: 12,
+        children: enabledCycles.map((type) {
+          final value = switch (type) {
+            BiorhythmType.physical => snapshot.physical,
+            BiorhythmType.emotional => snapshot.emotional,
+            BiorhythmType.intellectual => snapshot.intellectual,
+            BiorhythmType.intuitive => snapshot.intuitive,
+          };
+          final color = AppColors.colorForType(type);
+          return _BiorhythmBadge(
+            label: type.title,
+            value: value.percent.round(),
+            color: color,
+            isCritical: value.isCritical,
+            textTheme: theme.textTheme,
+          );
+        }).toList(),
+      ),
     );
   }
 }

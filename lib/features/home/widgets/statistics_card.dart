@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:biorhythms_flutter/core/constants/strings.dart';
 import 'package:biorhythms_flutter/core/theme/app_colors.dart';
+import 'package:biorhythms_flutter/core/widgets/glass_card.dart';
 import 'package:biorhythms_flutter/domain/biorhythm/biorhythm_calculator.dart';
 import 'package:biorhythms_flutter/features/home/providers/date_providers.dart';
 import 'package:biorhythms_flutter/features/home/providers/person_providers.dart';
+import 'package:biorhythms_flutter/features/settings/providers/cycle_visibility_provider.dart';
 
 class StatisticsCard extends ConsumerWidget {
   const StatisticsCard({super.key});
@@ -14,6 +16,7 @@ class StatisticsCard extends ConsumerWidget {
     final s = AppStrings.of(context);
     final person = ref.watch(selectedPersonProvider);
     final focusDate = ref.watch(focusDateProvider);
+    final enabledCycles = ref.watch(enabledCyclesProvider).valueOrNull ?? BiorhythmType.values.toSet();
 
     if (person == null) return const SizedBox.shrink();
     final snapshot = BiorhythmCalculator.calculate(
@@ -21,24 +24,30 @@ class StatisticsCard extends ConsumerWidget {
       targetDate: focusDate,
     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          s.todaySummary,
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-        ),
-        const SizedBox(height: 12),
-        ...snapshot.all.map((v) => _StatRow(
-              value: v,
-              daysLabel: s.days,
-              criticalLabel: s.criticalDay,
-              risingLabel: s.phaseRising,
-              fallingLabel: s.phaseFalling,
-            )),
-      ],
+    return GlassCard(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            s.todaySummary,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+          ),
+          const SizedBox(height: 12),
+          ...snapshot.all
+              .where((v) => enabledCycles.contains(v.type))
+              .map((v) => _StatRow(
+                    value: v,
+                    daysLabel: s.days,
+                    criticalLabel: s.criticalDay,
+                    risingLabel: s.phaseRising,
+                    fallingLabel: s.phaseFalling,
+                  )),
+        ],
+      ),
     );
   }
 }

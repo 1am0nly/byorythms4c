@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:biorhythms_flutter/core/theme/app_colors.dart';
 import 'package:biorhythms_flutter/domain/biorhythm/biorhythm_calculator.dart';
 import 'package:biorhythms_flutter/features/home/providers/person_providers.dart';
+import 'package:biorhythms_flutter/features/settings/providers/cycle_visibility_provider.dart';
 
 class BiorhythmDots extends ConsumerWidget {
   const BiorhythmDots({super.key});
@@ -13,6 +14,7 @@ class BiorhythmDots extends ConsumerWidget {
     if (person == null) return const SizedBox.shrink();
 
     final snapshot = ref.watch(selectedSnapshotProvider);
+    final enabledCycles = ref.watch(enabledCyclesProvider).valueOrNull ?? BiorhythmType.values.toSet();
 
     // ВНИМАНИЕ: это точечный фикс уменьшенных отступов, который снижает
     // риск переполнения на маленьких экранах, но не устраняет его
@@ -26,7 +28,10 @@ class BiorhythmDots extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: snapshot.all.map((value) => _DotItem(value: value)).toList(),
+        children: snapshot.all
+            .where((v) => enabledCycles.contains(v.type))
+            .map((value) => _DotItem(value: value))
+            .toList(),
       ),
     );
   }
