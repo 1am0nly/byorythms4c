@@ -39,7 +39,7 @@
 
 ### ❌ Ожидает действий
 - [ ] **GitHub Pages**: включить в `Settings → Pages` (ветка `gh-pages`, папка `/`)
-- [ ] **Скриншоты**: 5 шт 1080×1920 (на телефоне/эмуляторе) + scrolling
+- [x] **Скриншоты**: 6 шт в `store/assets/screenshots/` (home_chart, year_overview, compatibility, paywall, settings, info)
 - [ ] **Feature graphic**: 1024×500 PNG
 - [ ] **Google Play Console**: создать приложение, заполнить листинг, загрузить AAB, IAP продукты
 - [ ] **IAP**: `yearly_premium` (3д trial), `monthly_premium`
