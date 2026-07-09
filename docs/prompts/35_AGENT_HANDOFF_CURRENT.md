@@ -41,10 +41,16 @@
 ```
 flutter pub get              ✅ (background_service удалён)
 flutter analyze              ✅ 0 issues
-flutter test                 ✅ 19 passed
-flutter build appbundle --release ✅ (27.1MB)
+flutter test                 ✅ 19/19
 flutter build apk --debug    ✅ (установлен на DN2103)
+flutter build appbundle --release ✅ (27.1MB)
 ```
+
+## GitHub
+- Репо: `https://github.com/1am0nly/byorythms4c`
+- `main` — весь код v0.2.0 (запушен)
+- `gh-pages` — `privacy/index.html` (нужно включить Pages в Settings)
+- Файлы для команды: `README.md`, `STATUS.md`
 
 ## Правила для агентов
 - Не возвращать к "3 циклам"
