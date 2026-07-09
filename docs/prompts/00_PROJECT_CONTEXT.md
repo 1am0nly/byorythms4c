@@ -2,12 +2,14 @@
 
 ## Актуальный статус на 10.07.2026
 - Проект находится в `C:\Users\a1am3\biorhythms_flutter`.
-- Полноценное приложение с 10 фичами: Home, Info, Settings, Premium, Female mode, Biometrics, Push notifications, Compatibility, Year overview, Statistics, Legal/About, Locale.
+- Полноценное приложение с 10 фичами.
 - В домене **4 биоритма**: физический 23, эмоциональный 28, интеллектуальный 33, интуитивный 38 дней.
-- **Dart-файлы + `.g.dart`**, **19 тестов** (3 файла), **13+ маршрутов**.
-- Последняя проверенная команда сборки: `C:\src\flutter\bin\flutter.bat build apk --debug`.
-- Результат: `flutter analyze` — 0 issues, `flutter test` — 19 passed, `flutter build appbundle --release` — 27.1MB
-- `compileSdk = flutter.compileSdkVersion` (android-35 сломан в локальном SDK, поэтому откатились)
+- **19 тестов**, **13+ маршрутов**.
+- Результат: `flutter analyze` ✅, `flutter test` 19/19 ✅, `flutter build appbundle --release` 27.1MB ✅
+- `compileSdk = flutter.compileSdkVersion` (~34, android-35 сломан в локальном SDK)
+- Релизная подпись: upload-keystore.jks + key.properties
+- Репо: https://github.com/1am0nly/byorythms4c (main + gh-pages)
+- Store контент: `store/assets/` (тексты), `store/assets/screenshots/` (6 JPG), `store/metadata/`, `store/privacy/`
 - Релизная подпись: upload-keystore.jks + key.properties (в .gitignore)
 - `flutter_background_service`: удалён из зависимостей и AndroidManifest
 

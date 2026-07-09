@@ -48,8 +48,8 @@ flutter build appbundle --release ✅ (27.1MB)
 
 ## GitHub
 - Репо: `https://github.com/1am0nly/byorythms4c`
-- `main` — весь код v0.2.0 (запушен)
-- `gh-pages` — `privacy/index.html` (нужно включить Pages в Settings)
+- `main` — весь код v0.2.0 + 6 скриншотов (JPG) + README + STATUS (запушен)
+- `gh-pages` — `privacy/index.html` (нужно включить Pages в Settings → Pages)
 - Файлы для команды: `README.md`, `STATUS.md`
 
 ## Правила для агентов
@@ -64,24 +64,19 @@ flutter build appbundle --release ✅ (27.1MB)
 2. **Выполнен** — задачи качества (`39_OPENCODE_QUALITY_TASKS.md`)
 3. **Выполнен** — логотип + Liquid Glass (`37_LOGO_PREMIUM_DESIGN.md`)
 4. **Выполнен** — release-подпись + compileSdk 35
-5. **TODO** — реальные скриншоты (1080×1920, 5 шт + scrolling)
+5. **Выполнен** — скриншоты (6 шт, с реального девайса, `store/assets/screenshots/`)
 6. **TODO** — Feature graphic (1024×500)
-7. **TODO** — IAP продукты в Google Play Console (monthly_premium, yearly_premium)
-8. **TODO** — Internal Testing
+7. **TODO** — Включить GitHub Pages в Settings → Pages
+8. **TODO** — IAP продукты в Google Play Console (monthly_premium, yearly_premium)
+9. **TODO** — Internal Testing
 
 ## Задачи для OpenCode
 - Толкум задачи качества (выполнены)
 - Widget-тесты на 4 циклы (выполнены)
+- Интеграция Gemini-контента в store/ (выполнено)
+- Создание keystore + signing config (выполнено)
+- Скриншоты (выполнено, 6 JPG с DN2103)
 
 ## Задачи для Gemini
-- Все тексты — 4 цикла. Обязательная оговорка о развлекательном характере.
-- `40_GEMINI_STORE_CONTENT.md` — **ВЫПОЛНЕНО**. Все файлы созданы:
-  - `store/assets/google_play_listing_ru.md`
-  - `store/assets/app_store_listing_en.md`
-  - `store/assets/release_notes_v0.2.0.md`
-  - `store/assets/screenshots_descriptions.md`
-  - `store/assets/review_templates.md`
-  - `store/metadata/android/listing.txt` (обновлён)
-  - `store/metadata/ios/listing.txt` (обновлён)
-  - `store/privacy/index.html` (веб-страница Privacy Policy)  
-- ❌ Осталось: реальные скриншоты (сделать на девайсе / эмуляторе)
+- ✅ **ВСЕ ЗАДАЧИ ВЫПОЛНЕНЫ** — контент создан, скриншоты готовы
+- Файлы в `store/assets/`, `store/metadata/`, `store/privacy/`, `store/assets/screenshots/`
