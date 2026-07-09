@@ -1,0 +1,18 @@
+name=BioRhythms: Energy Tracker
+subtitle=Physical, Emotional, Intellectual & Intuitive Cycles
+description=
+Optimize your daily schedule with BioRhythms. Using mathematical models (23, 28, 33, and 38-day cycles), BioRhythms provides an estimate of your physical, emotional, intellectual, and intuitive energy levels.
+
+FEATURES:
+• Interactive 7/30-day chart
+• Four cycles: Physical, Emotional, Intellectual, Intuitive
+• Critical day detection
+• Multiple profiles
+• Female cycle tracking
+• Daily push notifications
+• Chart export (PNG/PDF)
+• Biometric profile protection
+• Partner compatibility
+• 100% private — all data stays on your device
+
+*For entertainment purposes only. This application does not provide medical advice.*

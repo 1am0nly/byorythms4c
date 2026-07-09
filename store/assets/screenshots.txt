@@ -1,0 +1,23 @@
+Screenshot requirements for store listing:
+
+1. home_chart.png (1242x2688 iOS / 1080x1920 Android)
+   - Main screen showing biorhythm chart with 3 colored lines
+   - Profile selector at top, date navigation, dots below
+   
+2. settings.png (1242x2688 / 1080x1920)
+   - Settings screen showing all sections (Profile, Female Mode, Biometrics, Notifications, Referral, Theme, About)
+
+3. female_mode.png (1242x2688 / 1080x1920)
+   - Female mode screen with cycle calendar and phase tracking
+   
+4. paywall.png (1242x2688 / 1080x1920)
+   - Premium subscription screen with monthly/yearly comparison
+
+5. info.png (1242x2688 / 1080x1920)
+   - Encyclopedia / Info screen showing article list
+
+6. compatibility.png (1242x2688 / 1080x1920)
+   - Compatibility screen with two date pickers and result circle
+
+Store icon: store/assets/icon.png (1024x1024)
+Feature graphic (Android): store/assets/feature_graphic.png (1024x500)
