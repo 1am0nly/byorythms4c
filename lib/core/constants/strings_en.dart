@@ -179,6 +179,7 @@ class AppStringsEn {
   static const String biometricAccessReason = 'Authenticate to access the app';
   static const String accessDenied = 'Access denied';
   static const String noPurchasesFound = 'No purchases found to restore';
+  static const String storeUnavailable = 'Store unavailable, try again later';
   static const String premiumActive = 'Premium Active';
   static const String premiumSection = 'PREMIUM';
   static const String manage = 'Manage';

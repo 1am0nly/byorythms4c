@@ -254,6 +254,7 @@ class AppStringsLocale {
   String get accessDenied => _isEn ? AppStringsEn.accessDenied : 'Доступ заблокирован';
   String get unlock => _isEn ? 'Unlock' : 'Разблокировать';
   String get noPurchasesFound => _isEn ? AppStringsEn.noPurchasesFound : 'Покупок для восстановления не найдено';
+  String get storeUnavailable => _isEn ? AppStringsEn.storeUnavailable : 'Магазин недоступен, попробуйте позже';
   String get premiumActive => _isEn ? AppStringsEn.premiumActive : 'Premium активен';
   String get premiumSection => _isEn ? AppStringsEn.premiumSection : 'PREMIUM';
   String get manage => _isEn ? AppStringsEn.manage : 'Управление';

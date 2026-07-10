@@ -226,12 +226,18 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   void _purchase() async {
     setState(() => _isPurchasing = true);
     try {
-      await ref.read(isPremiumProvider.notifier).purchasePlan(_selectedPlan);
-      if (mounted) {
+      final initiated =
+          await ref.read(isPremiumProvider.notifier).purchasePlan(_selectedPlan);
+      if (!mounted) return;
+      if (initiated) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppStrings.of(context).premiumActivated)),
         );
         context.pop();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppStrings.of(context).storeUnavailable)),
+        );
       }
     } catch (e) {
       if (mounted) {

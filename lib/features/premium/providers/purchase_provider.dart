@@ -145,7 +145,7 @@ class IsPremiumNotifier extends AsyncNotifier<bool> {
     }
   }
 
-  Future<void> purchasePlan(String planType) async {
+  Future<bool> purchasePlan(String planType) async {
     final productId =
         planType == 'yearly' ? 'yearly_premium' : 'monthly_premium';
     final iap = InAppPurchase.instance;
@@ -154,7 +154,7 @@ class IsPremiumNotifier extends AsyncNotifier<bool> {
       if (kDebugMode) {
         await _simulatePurchase(planType);
       }
-      return;
+      return false;
     }
     final Set<String> ids = {productId};
     final response = await iap.queryProductDetails(ids);
@@ -164,13 +164,16 @@ class IsPremiumNotifier extends AsyncNotifier<bool> {
         if (kDebugMode) {
           await _simulatePurchase(planType);
         }
-        return;
+        return false;
       }
       final purchaseParam = PurchaseParam(productDetails: product);
       await iap.buyNonConsumable(purchaseParam: purchaseParam);
+      return true;
     } else if (kDebugMode) {
       await _simulatePurchase(planType);
+      return true;
     }
+    return false;
   }
 
   /// Демо-режим для тестирования без реального магазина (эмулятор,
