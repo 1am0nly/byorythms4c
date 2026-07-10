@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:biorhythms_flutter/core/constants/strings.dart';
 
 class FemaleCycleData {
   final int cycleLength;
@@ -45,14 +46,14 @@ class FemaleCycleData {
     return 1.0 - (distanceFromOvulation / maxDistance);
   }
 
-  String phaseOn(DateTime targetDate) {
-    if (isMenstruatingOn(targetDate)) return 'Менструация';
-    if (isFertileWindowOn(targetDate)) return 'Фертильное окно';
+  String phaseOn(DateTime targetDate, AppStringsLocale s) {
+    if (isMenstruatingOn(targetDate)) return s.cyclePhaseMenstrual;
+    if (isFertileWindowOn(targetDate)) return s.cyclePhaseFertile;
     final ovulationDay = cycleLength ~/ 2;
     final daysSincePeriod =
         targetDate.difference(lastPeriodStart).inDays % cycleLength;
-    if (daysSincePeriod < ovulationDay) return 'Фолликулярная фаза';
-    return 'Лютеиновая фаза';
+    if (daysSincePeriod < ovulationDay) return s.cyclePhaseFollicular;
+    return s.cyclePhaseLuteal;
   }
 
   int dayInCycleOn(DateTime targetDate) {

@@ -117,7 +117,7 @@ class FemaleModeScreen extends ConsumerWidget {
                       _PhaseRow(
                         icon: Icons.water_drop,
                         label: s.currentPhaseLabel,
-                        value: cycleData.phaseOn(now),
+                        value: cycleData.phaseOn(now, s),
                       ),
                       const Divider(),
                       _PhaseRow(

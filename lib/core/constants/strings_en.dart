@@ -148,6 +148,8 @@ class AppStringsEn {
   static const String cyclePhaseMenstrual = 'Period';
   static const String cyclePhaseFertile = 'Fertile';
   static const String cyclePhaseOvulation = 'Ovulation';
+  static const String cyclePhaseFollicular = 'Follicular phase';
+  static const String cyclePhaseLuteal = 'Luteal phase';
   static const String cycleLengthLabel = 'Cycle Length';
   static const String periodLengthLabel = 'Period Length';
   static const String lastPeriodLabel = 'Last Period';

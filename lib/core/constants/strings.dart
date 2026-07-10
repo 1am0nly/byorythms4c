@@ -191,9 +191,11 @@ class AppStringsLocale {
   String get sat => _isEn ? 'Sat' : 'Сб';
   String get sun => _isEn ? 'Sun' : 'Вс';
   String get cycleCalendar => _isEn ? 'Cycle Calendar' : 'Календарь цикла';
-  String get cyclePhaseMenstrual => _isEn ? 'Period' : 'Месячные';
-  String get cyclePhaseFertile => _isEn ? 'Fertile' : 'Фертильные';
+  String get cyclePhaseMenstrual => _isEn ? 'Period' : 'Менструация';
+  String get cyclePhaseFertile => _isEn ? 'Fertile' : 'Фертильное окно';
   String get cyclePhaseOvulation => _isEn ? 'Ovulation' : 'Овуляция';
+  String get cyclePhaseFollicular => _isEn ? 'Follicular phase' : 'Фолликулярная фаза';
+  String get cyclePhaseLuteal => _isEn ? 'Luteal phase' : 'Лютеиновая фаза';
   String get cycleLengthLabel => _isEn ? 'Cycle Length' : 'Длина цикла';
   String get periodLengthLabel => _isEn ? 'Period Length' : 'Длина месячных';
   String get lastPeriodLabel => _isEn ? 'Last Period' : 'Последние месячные';
