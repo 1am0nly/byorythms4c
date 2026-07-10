@@ -8,6 +8,7 @@ class AppStrings {
   static const String appVersion = '0.2.0';
   static const String homeTab = 'Дом';
   static const String infoTab = 'Инфо';
+  static const String settingsTab = 'Настройки';
   static const String settings = 'Настройки';
   static const String physical = 'Физический';
   static const String emotional = 'Эмоциональный';
@@ -36,6 +37,7 @@ class AppStringsLocale {
   String get appTitle => _isEn ? AppStringsEn.appTitle : AppStrings.appTitle;
   String get homeTab => _isEn ? AppStringsEn.homeTab : AppStrings.homeTab;
   String get infoTab => _isEn ? AppStringsEn.infoTab : AppStrings.infoTab;
+  String get settingsTab => _isEn ? AppStringsEn.settingsTab : AppStrings.settingsTab;
   String get settings => _isEn ? AppStringsEn.settings : AppStrings.settings;
   String get physical => _isEn ? AppStringsEn.physical : AppStrings.physical;
   String get emotional => _isEn ? AppStringsEn.emotional : AppStrings.emotional;

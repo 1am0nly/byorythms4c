@@ -186,8 +186,9 @@ lib/
 - [x] Privacy Policy web page (на gh-pages)
 - [x] Биометрия: фикс блокировки входа (FlutterFragmentActivity)
 - [x] Иконка/название приложения (Biorhythms, кастомный лаунчер-иконки)
-- [ ] GitHub Pages: включить в Settings → Pages → Branch: gh-pages
-- [ ] Feature graphic (1024×500) для Google Play
+- [x] GitHub Pages: включить в Settings → Pages → Branch: gh-pages (доступна `https://1am0nly.github.io/byorythms4c/privacy/index.html`)
+- [x] Feature graphic (1024×500) для Google Play
+- [x] Known Bugs v0.2.0 (HIGH #1-14) — починить до релиза (Phase B: #1-14 FIXED)
 - [ ] Регистрация IAP продуктов `yearly_premium` / `monthly_premium` в Google Play Console
 - [ ] AAB upload в Google Play Console (Internal Testing)
 - [ ] iOS developer account ($99/год)
@@ -213,3 +214,61 @@ lib/
 - **Локализация настроек**: все секции (тема, циклы, уведомления, премиум-дата) — через `AppStrings`, RU/EN.
 - **DB-миграция**: `schemaVersion: 2` + пустой `MigrationStrategy.onUpgrade`.
 - **Widget-тесты**: `test/home_4_cycles_test.dart` — 4 цикла в DailySummary и BiorhythmDots.
+- **Feature graphic**: `store/assets/feature_graphic.png` (1024×500, 4 circles + two-color title)
+
+## Known Bugs v0.2.0 (обнаружены 10.07.2026)
+Перед любыми изменениями проверять этот список — не дублировать фиксы.
+
+### HIGH — все 14 починены (Phase B, 10.07.2026)
+| # | Область | Статус |
+|---|---------|--------|
+| 1 | Chart tooltip | FIXED — `enabledTypes` lookup вместо `BiorhythmType.values[barIndex]` |
+| 2 | Notif race | FIXED — `_isScheduling` guard |
+| 3 | Notif permissions | FIXED — `requestIosPermission()` / `requestAndroidPermission()` в `showTestNotificationNow()` |
+| 4 | Providers race | FIXED — `SelectedPersonIdNotifier` → `AsyncNotifier` |
+| 5 | DB migration | FIXED — `createAll()` в `onUpgrade` |
+| 6 | IAP no validation | FIXED — `purchaseID` null-check |
+| 7 | IAP wrong API | FIXED — product ID mismatch handled |
+| 8 | IAP false success | FIXED — `_simulatePurchase` gated to `kDebugMode` |
+| 9 | IAP restore race | FIXED — `Future.delayed(2s)` + re-check after restore |
+| 10 | i18n cycles | FIXED — `localizedTitle(AppStringsLocale)` on enum |
+| 11 | Nav shell | FIXED — `/settings` inside `ShellRoute` with 3rd tab |
+| 12 | Layout overflow | FIXED — `TextOverflow.ellipsis` in `_BiorhythmBadge` |
+| 13 | Year ignores cycles | FIXED — `enabledCycles` filtering in average |
+| 14 | Female DateTime.now | FIXED — all getters → methods with `targetDate` param |
+
+### MEDIUM — желательно до релиза
+| # | Область | Баг | Файл:строка |
+|---|---------|-----|-------------|
+| 15 | Notif unhandled | `_schedule()` fire-and-forget `Future<void>` — исключения теряются | `notification_scheduler.dart:62-65` |
+| 16 | Notif cancel gap | `cancelAll()` перед `periodicallyShow()` — окно без уведомления, если убьют процесс | `notification_scheduler.dart:89-112` |
+| 17 | Notif dispose | `dispose()` пустой — listeners не отписываются | `notification_scheduler.dart:123` |
+| 18 | Notif stale person | `person` читается ДО `cancelAll()` — если юзер переключил профиль за асинхронный гэп, пуш уйдёт старому | `notification_scheduler.dart:86-92` |
+| 19 | IAP no error/cancel | `purchaseStream` не обрабатывает `error`/`canceled`/`pending` — транзакция зависает | `purchase_provider.dart:78-89` |
+| 20 | IAP free fallback | `_simulatePurchase()` вызывается когда ProductDetails пуст (misconfigured продукт) — даёт премиум бесплатно | `purchase_provider.dart:144-150` |
+| 21 | IAP no auto-restore | При старте не вызывается `iap.restorePurchases()` — после переустановки премиум теряется | `purchase_provider.dart:23-58` |
+| 22 | IAP stale expiry | `premiumExpiry` не очищается при `setPremium(false)` — days remaining показывает неверные цифры | `purchase_provider.dart:50-101` |
+| 23 | IAP subscription drift | При пропущенном событии автопродления локальный expiry расходится с реальным | `purchase_provider.dart:72-74,143` |
+| 24 | IAP stream error | `onError` в purchaseStream — silent, стрим не пересоздаётся | `purchase_provider.dart:38-40` |
+| 25 | IAP timezone | `DateTime.now().add(Days)` при DST/timezone switch даёт плавающий expiry | `purchase_provider.dart:52,96` |
+| 26 | Referral dead | `addPremiumDays` существует, но никогда не вызывается при рефералах | `purchase_provider.dart:103-117` |
+| 27 | Profile CRUD no await | `delete()`/`update()` не await-ятся — диалог закрывается до завершения | `profile_management_screen.dart:51,186` |
+| 28 | Female phase RU | `cycle_data.phase` — хардкод RU строк ("Менструация"), не переводится | `cycle_data.dart:48-56` |
+| 29 | Female not per-profile | Настройки женского режима глобальные, а не per-profile | `cycle_provider.dart:109-121` |
+| 30 | Female fertile overlap | `periodLength` может перекрывать fertile window — нет валидации | `cycle_data.dart:14-55` |
+| 31 | Onboarding fire-and-forget | `personRepositoryProvider.add()` и `hasSeenOnboarding.complete()` не await-ятся | `onboarding_screen.dart:200-210` |
+
+### LOW — опционально
+| # | Область | Баг |
+|---|---------|-----|
+| 32 | No delete in SettingsDao | `settings_dao.dart` — нет delete(), ключи накапливаются |
+| 33 | Hardcoded "Premium:" in gate | `premium_gate.dart:48-49` |
+| 34 | `Bio" не локализован | `biometric_setup_screen.dart:78` ("Face ID / Fingerprint") |
+| 35 | Chart axis labels | `minY: -110, interval: 50` — может дать некратные значения в fl_chart |
+| 36 | Statistics day 0 | `progress = 0` в критический день — визуально сбивает с толку |
+| 37 | `_parseId` crash | `int.parse('')` упадёт на пустом ID |
+| 38 | `_save` null assert | `state.value!.name` — fragile при error state |
+| 39 | BottomNavTheme dead | `BottomNavigationBarThemeData` настроен, но используется `NavigationBar` (M3) |
+| 40 | scaffoldBg deprecated | `scaffoldBackgroundColor` — deprecated в Flutter 3.22 |
+| 41 | withOpacity deprecated | 34 использования `Color.withOpacity()` — deprecated |
+| 42 | Скрыть enabledCycles не везде | `enabledCycles` не фильтруется в `selectedSnapshotProvider` и тестовом пуше |

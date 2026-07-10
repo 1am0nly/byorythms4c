@@ -14,40 +14,31 @@ final personsProvider = StreamProvider<List<Person>>((ref) {
 });
 
 final selectedPersonIdProvider =
-    NotifierProvider<SelectedPersonIdNotifier, String>(
+    AsyncNotifierProvider<SelectedPersonIdNotifier, String>(
   SelectedPersonIdNotifier.new,
 );
 
-class SelectedPersonIdNotifier extends Notifier<String> {
+class SelectedPersonIdNotifier extends AsyncNotifier<String> {
   @override
-  String build() {
-    _init();
-    return '';
-  }
-
-  Future<void> _init() async {
+  Future<String> build() async {
     final dao = ref.read(settingsDaoProvider);
     final saved = await dao.get('selectedPersonId');
-    if (saved != null && saved.isNotEmpty) {
-      state = saved;
-    }
+    return (saved != null && saved.isNotEmpty) ? saved : '';
   }
 
-  void select(String id) {
-    state = id;
-    _save();
-  }
-
-  Future<void> _save() async {
+  Future<void> select(String id) async {
+    state = AsyncData(id);
     final dao = ref.read(settingsDaoProvider);
-    await dao.set('selectedPersonId', state);
+    await dao.set('selectedPersonId', id);
   }
 }
 
 final selectedPersonProvider = Provider<Person?>((ref) {
   final personsAsync = ref.watch(personsProvider);
   final persons = personsAsync.valueOrNull ?? [];
-  final selectedId = ref.watch(selectedPersonIdProvider);
+  final selectedIdAsync = ref.watch(selectedPersonIdProvider);
+  final selectedId = selectedIdAsync.valueOrNull ?? '';
+  if (selectedId.isEmpty && persons.isNotEmpty) return persons.first;
   try {
     return persons.firstWhere((p) => p.id == selectedId);
   } catch (_) {

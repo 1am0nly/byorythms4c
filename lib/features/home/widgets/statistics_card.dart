@@ -37,15 +37,16 @@ class StatisticsCard extends ConsumerWidget {
                 ),
           ),
           const SizedBox(height: 12),
-          ...snapshot.all
-              .where((v) => enabledCycles.contains(v.type))
-              .map((v) => _StatRow(
-                    value: v,
-                    daysLabel: s.days,
-                    criticalLabel: s.criticalDay,
-                    risingLabel: s.phaseRising,
-                    fallingLabel: s.phaseFalling,
-                  )),
+              ...snapshot.all
+                  .where((v) => enabledCycles.contains(v.type))
+                  .map((v) => _StatRow(
+                        value: v,
+                        daysLabel: s.days,
+                        titleLabel: v.type.localizedTitle(s),
+                        criticalLabel: s.criticalDay,
+                        risingLabel: s.phaseRising,
+                        fallingLabel: s.phaseFalling,
+                      )),
         ],
       ),
     );
@@ -55,6 +56,7 @@ class StatisticsCard extends ConsumerWidget {
 class _StatRow extends StatelessWidget {
   final BiorhythmValue value;
   final String daysLabel;
+  final String titleLabel;
   final String criticalLabel;
   final String risingLabel;
   final String fallingLabel;
@@ -62,6 +64,7 @@ class _StatRow extends StatelessWidget {
   const _StatRow({
     required this.value,
     required this.daysLabel,
+    required this.titleLabel,
     required this.criticalLabel,
     required this.risingLabel,
     required this.fallingLabel,
@@ -94,7 +97,7 @@ class _StatRow extends StatelessWidget {
           Expanded(
             flex: 2,
             child: Text(
-              value.type.title,
+              titleLabel,
               style: Theme.of(context).textTheme.bodyMedium,
               overflow: TextOverflow.ellipsis,
             ),

@@ -16,6 +16,7 @@ final notificationSchedulerProvider = Provider<NotificationScheduler>((ref) {
 class NotificationScheduler {
   final Ref _ref;
   bool _initialized = false;
+  bool _isScheduling = false;
 
   NotificationScheduler(this._ref);
 
@@ -23,11 +24,6 @@ class NotificationScheduler {
     if (_initialized) return;
     _initialized = true;
 
-    // ref.listen на AsyncValue сработает и на переходах AsyncLoading →
-    // AsyncData, поэтому фильтруем: реагируем только когда все три
-    // провайдера уже реально загружены (hasValue), а не на промежуточные
-    // состояния загрузки — иначе рискуем повторить ту же гонку состояний
-    // на уровне "сработало слишком рано".
     _ref.listen(notificationEnabledProvider, (prev, next) {
       if (next.hasValue) _maybeScheduleOrCancel();
     });
@@ -45,24 +41,32 @@ class NotificationScheduler {
   }
 
   void _maybeScheduleOrCancel() {
-    final enabledAsync = _ref.read(notificationEnabledProvider);
-    final hourAsync = _ref.read(notificationHourProvider);
-    final minuteAsync = _ref.read(notificationMinuteProvider);
+    if (_isScheduling) return;
+    _isScheduling = true;
+    _doScheduleOrCancel();
+  }
 
-    // Ждём, пока ВСЕ три провайдера реально загрузятся из БД — если
-    // хотя бы один ещё в AsyncLoading, не шедулим и не отменяем ничего.
-    // Как только последний из них догрузится, слушатель выше вызовет
-    // этот метод повторно с уже полным набором значений.
-    if (!enabledAsync.hasValue || !hourAsync.hasValue || !minuteAsync.hasValue) {
-      return;
-    }
+  Future<void> _doScheduleOrCancel() async {
+    try {
+      final enabledAsync = _ref.read(notificationEnabledProvider);
+      final hourAsync = _ref.read(notificationHourProvider);
+      final minuteAsync = _ref.read(notificationMinuteProvider);
 
-    final enabled = enabledAsync.value!;
-    if (!enabled) {
-      _ref.read(notificationServiceProvider).cancelAll();
-      return;
+      if (!enabledAsync.hasValue || !hourAsync.hasValue || !minuteAsync.hasValue) {
+        return;
+      }
+
+      final enabled = enabledAsync.value!;
+      if (!enabled) {
+        await _ref.read(notificationServiceProvider).cancelAll();
+        return;
+      }
+      await _requestPermissionsThenSchedule();
+    } catch (e) {
+      debugPrint('NotificationScheduler error: $e');
+    } finally {
+      _isScheduling = false;
     }
-    _requestPermissionsThenSchedule();
   }
 
   Future<void> _requestPermissionsThenSchedule() async {
@@ -73,11 +77,6 @@ class NotificationScheduler {
     if (!androidGranted) {
       return;
     }
-    // requestExactAlarmPermission() больше не вызывается — перешли на
-    // periodicallyShow() (см. notification_service.dart), которому точный
-    // будильник не нужен. На проблемных устройствах пользователь всё
-    // равно не мог включить это разрешение вручную, а сам запрос иногда
-    // приводил к PlatformException при повторных быстрых вызовах.
     await _schedule();
   }
 

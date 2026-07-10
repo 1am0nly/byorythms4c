@@ -11,33 +11,33 @@ class FemaleCycleData {
     required this.lastPeriodStart,
   });
 
-  bool get isOvulationDay {
+  bool isOvulationDayOn(DateTime targetDate) {
     final ovulationDay = cycleLength ~/ 2;
     final daysSincePeriod =
-        DateTime.now().difference(lastPeriodStart).inDays % cycleLength;
+        targetDate.difference(lastPeriodStart).inDays % cycleLength;
     return daysSincePeriod == ovulationDay;
   }
 
-  bool get isFertileWindow {
+  bool isFertileWindowOn(DateTime targetDate) {
     final ovulationDay = cycleLength ~/ 2;
     final fertileStart = ovulationDay - 5;
     final fertileEnd = ovulationDay + 1;
     final daysSincePeriod =
-        DateTime.now().difference(lastPeriodStart).inDays % cycleLength;
+        targetDate.difference(lastPeriodStart).inDays % cycleLength;
     return daysSincePeriod >= fertileStart && daysSincePeriod <= fertileEnd;
   }
 
-  bool get isMenstruating {
+  bool isMenstruatingOn(DateTime targetDate) {
     final daysSincePeriod =
-        DateTime.now().difference(lastPeriodStart).inDays % cycleLength;
+        targetDate.difference(lastPeriodStart).inDays % cycleLength;
     return daysSincePeriod < periodLength;
   }
 
-  double get fertilityPercent {
-    if (isMenstruating) return 0.0;
+  double fertilityPercentOn(DateTime targetDate) {
+    if (isMenstruatingOn(targetDate)) return 0.0;
     final ovulationDay = cycleLength ~/ 2;
     final daysSincePeriod =
-        DateTime.now().difference(lastPeriodStart).inDays % cycleLength;
+        targetDate.difference(lastPeriodStart).inDays % cycleLength;
 
     final distanceFromOvulation = (daysSincePeriod - ovulationDay).abs();
     final maxDistance = max(ovulationDay, cycleLength - ovulationDay);
@@ -45,17 +45,17 @@ class FemaleCycleData {
     return 1.0 - (distanceFromOvulation / maxDistance);
   }
 
-  String get phase {
-    if (isMenstruating) return 'Менструация';
-    if (isFertileWindow) return 'Фертильное окно';
+  String phaseOn(DateTime targetDate) {
+    if (isMenstruatingOn(targetDate)) return 'Менструация';
+    if (isFertileWindowOn(targetDate)) return 'Фертильное окно';
     final ovulationDay = cycleLength ~/ 2;
     final daysSincePeriod =
-        DateTime.now().difference(lastPeriodStart).inDays % cycleLength;
+        targetDate.difference(lastPeriodStart).inDays % cycleLength;
     if (daysSincePeriod < ovulationDay) return 'Фолликулярная фаза';
     return 'Лютеиновая фаза';
   }
 
-  int get dayInCycle {
-    return DateTime.now().difference(lastPeriodStart).inDays % cycleLength;
+  int dayInCycleOn(DateTime targetDate) {
+    return targetDate.difference(lastPeriodStart).inDays % cycleLength;
   }
 }

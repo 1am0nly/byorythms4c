@@ -16,6 +16,7 @@ class FemaleModeScreen extends ConsumerWidget {
     final cycleLength = ref.watch(cycleLengthProvider);
     final periodLength = ref.watch(periodLengthProvider);
     final lastStart = ref.watch(lastPeriodStartProvider);
+    final now = DateTime.now();
 
     return Scaffold(
       appBar: AppBar(title: Text(s.femaleMode)),
@@ -116,29 +117,29 @@ class FemaleModeScreen extends ConsumerWidget {
                       _PhaseRow(
                         icon: Icons.water_drop,
                         label: s.currentPhaseLabel,
-                        value: cycleData.phase,
+                        value: cycleData.phaseOn(now),
                       ),
                       const Divider(),
                       _PhaseRow(
                         icon: Icons.biotech,
                         label: s.cycleDayLabel,
-                        value: '${cycleData.dayInCycle}',
+                        value: '${cycleData.dayInCycleOn(now)}',
                       ),
                       const Divider(),
                       _PhaseRow(
                         icon: Icons.monitor_heart_outlined,
                         label: s.fertilityLabel,
-                        value: cycleData.isFertileWindow
+                        value: cycleData.isFertileWindowOn(now)
                             ? s.fertileWindow
-                            : '${(cycleData.fertilityPercent * 100).round()}%',
+                            : '${(cycleData.fertilityPercentOn(now) * 100).round()}%',
                       ),
                       const Divider(),
                       _PhaseRow(
                         icon: Icons.notifications_active_outlined,
                         label: s.ovulationLabel,
-                        value: cycleData.isOvulationDay
+                        value: cycleData.isOvulationDayOn(now)
                             ? s.todayLabel
-                            : s.inDays.replaceFirst('{n}', '${cycleData.cycleLength ~/ 2 - cycleData.dayInCycle}'),
+                            : s.inDays.replaceFirst('{n}', '${cycleData.cycleLength ~/ 2 - cycleData.dayInCycleOn(now)}'),
                       ),
                     ],
                   ),

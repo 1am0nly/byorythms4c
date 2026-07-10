@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:biorhythms_flutter/data/database/providers.dart';
@@ -78,6 +79,10 @@ class IsPremiumNotifier extends AsyncNotifier<bool> {
     for (var purchaseDetails in purchaseDetailsList) {
       if (purchaseDetails.status == PurchaseStatus.purchased ||
           purchaseDetails.status == PurchaseStatus.restored) {
+        if (purchaseDetails.purchaseID == null ||
+            purchaseDetails.purchaseID!.isEmpty) {
+          continue;
+        }
         final planType =
             purchaseDetails.productID.contains('yearly') ? 'yearly' : 'monthly';
         final days = _realPurchaseDurationDays(planType);
@@ -121,8 +126,12 @@ class IsPremiumNotifier extends AsyncNotifier<bool> {
     final bool available = await iap.isAvailable().catchError((_) => false);
     if (available) {
       await iap.restorePurchases();
+      // Wait for the purchase stream to deliver restored purchases
+      await Future.delayed(const Duration(seconds: 2));
+      final dao = ref.read(settingsDaoProvider);
+      final val = await dao.get('isPremium');
+      state = AsyncData(val == 'true');
     } else {
-      // Offline fallback: check local DB
       final dao = ref.read(settingsDaoProvider);
       final val = await dao.get('isPremium');
       state = AsyncData(val == 'true');
@@ -134,19 +143,25 @@ class IsPremiumNotifier extends AsyncNotifier<bool> {
         planType == 'yearly' ? 'yearly_premium' : 'monthly_premium';
     final iap = InAppPurchase.instance;
     final bool available = await iap.isAvailable().catchError((_) => false);
-    if (available) {
-      final Set<String> ids = {productId};
-      final response = await iap.queryProductDetails(ids);
-      if (response.productDetails.isNotEmpty) {
-        final product = response.productDetails.first;
-        final purchaseParam = PurchaseParam(productDetails: product);
-        await iap.buyNonConsumable(purchaseParam: purchaseParam);
-      } else {
-        // Fallback for missing console config
+    if (!available) {
+      if (kDebugMode) {
         await _simulatePurchase(planType);
       }
-    } else {
-      // Fallback for emulator / simulator / local testing
+      return;
+    }
+    final Set<String> ids = {productId};
+    final response = await iap.queryProductDetails(ids);
+    if (response.productDetails.isNotEmpty) {
+      final product = response.productDetails.first;
+      if (product.id != productId) {
+        if (kDebugMode) {
+          await _simulatePurchase(planType);
+        }
+        return;
+      }
+      final purchaseParam = PurchaseParam(productDetails: product);
+      await iap.buyNonConsumable(purchaseParam: purchaseParam);
+    } else if (kDebugMode) {
       await _simulatePurchase(planType);
     }
   }

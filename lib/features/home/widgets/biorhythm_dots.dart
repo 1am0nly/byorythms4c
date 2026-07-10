@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:biorhythms_flutter/core/constants/strings.dart';
 import 'package:biorhythms_flutter/core/theme/app_colors.dart';
 import 'package:biorhythms_flutter/domain/biorhythm/biorhythm_calculator.dart';
 import 'package:biorhythms_flutter/features/home/providers/person_providers.dart';
@@ -62,7 +63,7 @@ class _DotItem extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           Text(
-            value.type.title,
+            value.type.localizedTitle(AppStrings.of(context)),
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const Spacer(),

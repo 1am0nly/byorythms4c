@@ -157,6 +157,8 @@ class NotificationService {
     required String body,
   }) async {
     await initialize();
+    await requestIosPermission();
+    await requestAndroidPermission();
     debugPrint('[NotificationService] showTestNotificationNow() called');
 
     final androidDetails = AndroidNotificationDetails(
@@ -174,13 +176,17 @@ class NotificationService {
       iOS: iosDetails,
     );
 
-    await _plugin.show(
-      999,
-      title,
-      body,
-      details,
-    );
-    debugPrint('[NotificationService] showTestNotificationNow() completed — check status bar NOW');
+    try {
+      await _plugin.show(
+        999,
+        title,
+        body,
+        details,
+      );
+      debugPrint('[NotificationService] showTestNotificationNow() completed — check status bar NOW');
+    } catch (e) {
+      debugPrint('[NotificationService] showTestNotificationNow() failed: $e');
+    }
   }
 
   Future<void> cancelNotification(int id) async {

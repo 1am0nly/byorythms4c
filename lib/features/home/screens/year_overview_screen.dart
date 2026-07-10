@@ -5,6 +5,7 @@ import 'package:biorhythms_flutter/core/constants/strings.dart';
 import 'package:biorhythms_flutter/domain/biorhythm/biorhythm_calculator.dart';
 import 'package:biorhythms_flutter/features/home/providers/person_providers.dart';
 import 'package:biorhythms_flutter/features/home/providers/date_providers.dart';
+import 'package:biorhythms_flutter/features/settings/providers/cycle_visibility_provider.dart';
 
 class YearOverviewScreen extends ConsumerWidget {
   const YearOverviewScreen({super.key});
@@ -14,6 +15,7 @@ class YearOverviewScreen extends ConsumerWidget {
     final s = AppStrings.of(context);
     final person = ref.watch(selectedPersonProvider);
     final focusDate = ref.watch(focusDateProvider);
+    final enabledCycles = ref.watch(enabledCyclesProvider).valueOrNull ?? BiorhythmType.values.toSet();
     if (person == null) {
       return Scaffold(
         appBar: AppBar(title: Text(s.yearOverviewTitle)),
@@ -55,6 +57,7 @@ class YearOverviewScreen extends ConsumerWidget {
                     birthDate: person.birthDate,
                     year: year,
                     month: month + 1,
+                    enabledCycles: enabledCycles,
                   ),
                 ],
               ),
@@ -73,6 +76,7 @@ class _MonthGrid extends StatelessWidget {
   final DateTime birthDate;
   final int year;
   final int month;
+  final Set<BiorhythmType> enabledCycles;
 
   const _MonthGrid({
     required this.strings,
@@ -81,42 +85,37 @@ class _MonthGrid extends StatelessWidget {
     required this.birthDate,
     required this.year,
     required this.month,
+    required this.enabledCycles,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            strings.mon,
-            strings.tue,
-            strings.wed,
-            strings.thu,
-            strings.fri,
-            strings.sat,
-            strings.sun,
-          ].map((d) {
-            return Expanded(
-              child: Center(
-                child: Text(d,
-                    style: const TextStyle(fontSize: 10, color: Colors.grey)),
-              ),
-            );
-          }).toList(),
+          Row(
+            children: [
+              Expanded(child: Center(child: Text(strings.mon, style: const TextStyle(fontSize: 9, color: Colors.grey)))),
+              Expanded(child: Center(child: Text(strings.tue, style: const TextStyle(fontSize: 9, color: Colors.grey)))),
+              Expanded(child: Center(child: Text(strings.wed, style: const TextStyle(fontSize: 9, color: Colors.grey)))),
+              Expanded(child: Center(child: Text(strings.thu, style: const TextStyle(fontSize: 9, color: Colors.grey)))),
+              Expanded(child: Center(child: Text(strings.fri, style: const TextStyle(fontSize: 9, color: Colors.grey)))),
+              Expanded(child: Center(child: Text(strings.sat, style: const TextStyle(fontSize: 9, color: Colors.grey)))),
+              Expanded(child: Center(child: Text(strings.sun, style: const TextStyle(fontSize: 9, color: Colors.grey)))),
+            ],
         ),
         const SizedBox(height: 2),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 7,
-            childAspectRatio: 1,
-            mainAxisSpacing: 1,
-            crossAxisSpacing: 1,
-          ),
-          itemCount: startWeekday + daysInMonth,
-          itemBuilder: (context, index) {
+        ClipRect(
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 7,
+              childAspectRatio: 1,
+              mainAxisSpacing: 1,
+              crossAxisSpacing: 1,
+            ),
+            itemCount: startWeekday + daysInMonth,
+            itemBuilder: (context, index) {
             if (index < startWeekday) {
               return const SizedBox.shrink();
             }
@@ -127,11 +126,22 @@ class _MonthGrid extends StatelessWidget {
               targetDate: date,
             );
 
-            final avg = (snapshot.physical.percent +
-                    snapshot.emotional.percent +
-                    snapshot.intellectual.percent +
-                    snapshot.intuitive.percent) /
-                4;
+            final values = <double>[];
+            if (enabledCycles.contains(BiorhythmType.physical)) {
+              values.add(snapshot.physical.percent);
+            }
+            if (enabledCycles.contains(BiorhythmType.emotional)) {
+              values.add(snapshot.emotional.percent);
+            }
+            if (enabledCycles.contains(BiorhythmType.intellectual)) {
+              values.add(snapshot.intellectual.percent);
+            }
+            if (enabledCycles.contains(BiorhythmType.intuitive)) {
+              values.add(snapshot.intuitive.percent);
+            }
+            final avg = values.isEmpty
+                ? 0.0
+                : values.reduce((a, b) => a + b) / values.length;
 
             final color = switch (avg) {
               > 50 => Colors.green.shade300,
@@ -140,7 +150,10 @@ class _MonthGrid extends StatelessWidget {
               _ => Colors.red.shade300,
             };
 
-            final isToday = date == DateTime.now();
+                final now = DateTime.now();
+                final isToday = date.year == now.year &&
+                    date.month == now.month &&
+                    date.day == now.day;
 
             return Container(
               decoration: BoxDecoration(
@@ -163,6 +176,7 @@ class _MonthGrid extends StatelessWidget {
             );
           },
         ),
+      ),
       ],
     );
   }

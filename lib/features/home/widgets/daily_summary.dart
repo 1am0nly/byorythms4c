@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:biorhythms_flutter/core/constants/strings.dart';
 import 'package:biorhythms_flutter/core/theme/app_colors.dart';
 import 'package:biorhythms_flutter/core/widgets/glass_card.dart';
 import 'package:biorhythms_flutter/domain/biorhythm/biorhythm_calculator.dart';
@@ -39,7 +40,7 @@ class DailySummary extends ConsumerWidget {
           };
           final color = AppColors.colorForType(type);
           return _BiorhythmBadge(
-            label: type.title,
+            label: type.localizedTitle(AppStrings.of(context)),
             value: value.percent.round(),
             color: color,
             isCritical: value.isCritical,
@@ -72,7 +73,9 @@ class _BiorhythmBadge extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(label, style: textTheme.bodySmall?.copyWith(fontSize: 11)),
+        Text(label,
+            style: textTheme.bodySmall?.copyWith(fontSize: 11),
+            overflow: TextOverflow.ellipsis),
         const SizedBox(height: 4),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),

@@ -37,9 +37,9 @@ class ProfileSelector extends ConsumerWidget {
               value: selectedPerson?.id,
               icon: const Icon(Icons.keyboard_arrow_down, size: 18),
               style: Theme.of(context).textTheme.labelLarge,
-              onChanged: (value) {
+              onChanged: (value) async {
                 if (value != null) {
-                  ref.read(selectedPersonIdProvider.notifier).select(value);
+                  await ref.read(selectedPersonIdProvider.notifier).select(value);
                 }
               },
               items: persons.map((p) {

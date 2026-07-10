@@ -61,8 +61,8 @@ flutter build appbundle --release ✅ (27.1MB)
 
 ## GitHub
 - Репо: `https://github.com/1am0nly/byorythms4c`
-- `main` — v0.2.0 (запушен: `2816b01`)
-- `gh-pages` — `privacy/index.html` (нужно включить Pages в Settings → Pages)
+- `main` — v0.2.0 (запушен: `a952818` — feature graphic)
+- `gh-pages` — `privacy/index.html` (доступна: https://1am0nly.github.io/byorythms4c/privacy/index.html)
 - `origin/gh-pages` — существует на удалённом репозитории
 - Файлы для команды: `README.md`, `STATUS.md`
 
@@ -73,18 +73,43 @@ flutter build appbundle --release ✅ (27.1MB)
 - Все новые провайдеры с фоновой загрузкой — только `AsyncNotifier`
 - После изменений: `flutter analyze` + `flutter test`
 
+## Known Bugs (см. 00_PROJECT_CONTEXT.md для полного списка)
+### HIGH (фикс до релиза) — #1-#14
+1. Chart tooltip wrong name/color при скрытых циклах
+2. Notif race: 5 concurrent _schedule()
+3. Test notif не запрашивает permissions
+4. Race в SelectedPersonId + 4 StateNotifier
+5. DB schema v2 с пустой migration
+6-9. IAP: no validation, wrong API, false success, restore race
+10. BiorhythmType.title хардкод RU
+11. /settings вне ShellRoute
+12. StatisticsCard overflow
+13. YearOverview игнорирует cycles
+14. Female cycle_data DateTime.now()
+
+### MEDIUM (#15-31) — желательно до релиза
+### LOW (#32-42) — опционально
+
+См. `00_PROJECT_CONTEXT.md` → "Known Bugs v0.2.0" для полных описаний.
+
+## План фиксов (очередность)
+- **B:** HIGH — все 14 починены (Phase B completed 10.07.2026)
+- **C:** MEDIUM — #15-#31
+- **D:** LOW — #32-#42
+
 ## Задачи
-1. **Выполнен** — удаление Workmanager (`36`)
-2. **Выполнен** — задачи качества (`39`)
-3. **Выполнен** — логотип + Liquid Glass (`37`)
-4. **Выполнен** — release-подпись
-5. **Выполнен** — скриншоты (6 шт, `store/assets/screenshots/`)
-6. **Выполнен** — биометрия (FlutterFragmentActivity)
-7. **Выполнен** — иконка/название в шторке уведомлений
-8. **Выполнен** — локализация экрана настроек
-9. **Выполнен** — labelInterval графика
-10. **TODO** — Feature graphic (1024×500)
-11. **TODO** — GitHub Pages (Settings → Pages → gh-pages)
-12. **TODO** — IAP продукты (monthly_premium, yearly_premium)
-13. **TODO** — AAB upload в Google Play Console
-14. **TODO** — iOS developer account ($99/год)
+- [x] **Выполнен** — удаление Workmanager (`36`)
+- [x] **Выполнен** — задачи качества (`39`)
+- [x] **Выполнен** — логотип + Liquid Glass (`37`)
+- [x] **Выполнен** — release-подпись
+- [x] **Выполнен** — скриншоты (6 шт, `store/assets/screenshots/`)
+- [x] **Выполнен** — биометрия (FlutterFragmentActivity)
+- [x] **Выполнен** — иконка/название в шторке уведомлений
+- [x] **Выполнен** — локализация экрана настроек
+- [x] **Выполнен** — labelInterval графика
+- [x] **Выполнен** — Feature graphic (1024×500)
+- [x] **Выполнен** — GitHub Pages (https://1am0nly.github.io/byorythms4c/privacy/index.html)
+- [x] **Выполнен** — HIGH bugs #1-14 (Phase B, 10.07.2026)
+- [ ] **TODO** — IAP продукты (monthly_premium, yearly_premium)
+- [ ] **TODO** — AAB upload в Google Play Console
+- [ ] **TODO** — iOS developer account ($99/год)

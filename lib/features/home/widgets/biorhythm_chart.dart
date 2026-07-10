@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:biorhythms_flutter/core/constants/strings.dart';
 import 'package:biorhythms_flutter/core/theme/app_colors.dart';
 import 'package:biorhythms_flutter/domain/biorhythm/biorhythm_calculator.dart';
 import 'package:biorhythms_flutter/features/home/providers/person_providers.dart';
@@ -20,6 +21,7 @@ class BiorhythmChart extends ConsumerWidget {
     final chartRange = ref.watch(chartRangeProvider);
     final theme = Theme.of(context);
     final enabledCycles = ref.watch(enabledCyclesProvider).valueOrNull ?? BiorhythmType.values.toSet();
+    final s = AppStrings.of(context);
 
     if (person == null) return const SizedBox.shrink();
 
@@ -42,6 +44,9 @@ class BiorhythmChart extends ConsumerWidget {
     // при определённых totalDays.
     const targetLabelCount = 8;
     final labelInterval = (totalDays / targetLabelCount).ceil().clamp(1, totalDays).toDouble();
+    final enabledTypes = BiorhythmType.values
+        .where((t) => enabledCycles.contains(t))
+        .toList();
 
     Widget chart = Container(
       // ВАЖНО: явный фон нужен не только для UI, но и для корректного
@@ -58,6 +63,7 @@ class BiorhythmChart extends ConsumerWidget {
           // может увидеть человек, никогда не открывавший «Биоритмы».
           _ChartLegend(
             theme: theme,
+            s: s,
             enabledCycles: enabledCycles,
             onToggle: (type) {
               ref.read(enabledCyclesProvider.notifier).toggle(type);
@@ -148,11 +154,11 @@ class BiorhythmChart extends ConsumerWidget {
                   touchTooltipData: LineTouchTooltipData(
                     getTooltipItems: (touchedSpots) {
                       return touchedSpots.map((spot) {
-                        final type = BiorhythmType.values[spot.barIndex];
-                        if (!enabledCycles.contains(type)) return null;
+                        if (spot.barIndex >= enabledTypes.length) return null;
+                        final type = enabledTypes[spot.barIndex];
                         final sign = spot.y >= 0 ? '+' : '';
                         return LineTooltipItem(
-                          '${type.title}: $sign${spot.y.round()}%',
+                          '${type.localizedTitle(s)}: $sign${spot.y.round()}%',
                           TextStyle(
                             color: AppColors.colorForType(type),
                             fontSize: 12,
@@ -173,9 +179,7 @@ class BiorhythmChart extends ConsumerWidget {
                     ),
                   ],
                 ),
-                lineBarsData: BiorhythmType.values
-                    .where((type) => enabledCycles.contains(type))
-                    .map((type) {
+                lineBarsData: enabledTypes.map((type) {
                   final color = AppColors.colorForType(type);
                   return LineChartBarData(
                     spots: snapshots.asMap().entries.map((entry) {
@@ -222,11 +226,13 @@ class _ChartLegend extends StatelessWidget {
   final ThemeData theme;
   final Set<BiorhythmType> enabledCycles;
   final void Function(BiorhythmType) onToggle;
+  final AppStringsLocale s;
 
   const _ChartLegend({
     required this.theme,
     required this.enabledCycles,
     required this.onToggle,
+    required this.s,
   });
 
   @override
@@ -256,7 +262,7 @@ class _ChartLegend extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  type.title,
+                  type.localizedTitle(s),
                   style: TextStyle(
                     fontSize: 11,
                     color: isEnabled

@@ -25,7 +25,7 @@ class SettingsScreen extends ConsumerWidget {
     final s = AppStrings.of(context);
     final personsAsync = ref.watch(personsProvider);
     final persons = personsAsync.valueOrNull ?? [];
-    final selectedId = ref.watch(selectedPersonIdProvider);
+    final selectedId = ref.watch(selectedPersonIdProvider).valueOrNull ?? '';
     final selectedName = persons.isNotEmpty
         ? (persons.firstWhere(
             (p) => p.id == selectedId,
@@ -57,8 +57,8 @@ class SettingsScreen extends ConsumerWidget {
                 trailing: persons.length > 1
                     ? PopupMenuButton<String>(
                         icon: const Icon(Icons.keyboard_arrow_down),
-                        onSelected: (id) {
-                          ref.read(selectedPersonIdProvider.notifier).select(id);
+                        onSelected: (id) async {
+                          await ref.read(selectedPersonIdProvider.notifier).select(id);
                         },
                         itemBuilder: (_) => persons.map((p) {
                           return PopupMenuItem(value: p.id, child: Text(p.name));
@@ -273,7 +273,7 @@ class SettingsScreen extends ConsumerWidget {
                       final isEnabled = enabledCycles.contains(type);
                       final color = AppColors.colorForType(type);
                       return SwitchListTile(
-                        title: Text(type.title),
+                        title: Text(type.localizedTitle(s)),
                         subtitle: Text(s.cycleVisibilitySub),
                         value: isEnabled,
                         activeColor: color,

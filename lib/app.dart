@@ -42,12 +42,14 @@ final routerProvider = Provider<GoRouter>((ref) {
           int currentIndex = 0;
           if (currentLocation.startsWith('/info')) {
             currentIndex = 1;
+          } else if (currentLocation.startsWith('/settings')) {
+            currentIndex = 2;
           }
 
           return Scaffold(
             body: child,
             bottomNavigationBar: NavigationBar(
-              selectedIndex: currentIndex,
+              selectedIndex: currentIndex.clamp(0, 2),
               onDestinationSelected: (index) {
                 switch (index) {
                   case 0:
@@ -55,6 +57,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                     break;
                   case 1:
                     context.go('/info');
+                    break;
+                  case 2:
+                    context.go('/settings');
                     break;
                 }
               },
@@ -68,6 +73,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                   icon: const Icon(Icons.info_outline),
                   selectedIcon: const Icon(Icons.info),
                   label: AppStrings.of(context).infoTab,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.settings_outlined),
+                  selectedIcon: const Icon(Icons.settings),
+                  label: AppStrings.of(context).settingsTab,
                 ),
               ],
             ),
@@ -90,33 +100,33 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          GoRoute(
+            path: '/settings',
+            builder: (context, state) => const SettingsScreen(),
+            routes: [
+              GoRoute(
+                path: 'profiles',
+                builder: (context, state) => const ProfileManagementScreen(),
+              ),
+              GoRoute(
+                path: 'notification-time',
+                builder: (context, state) => const NotificationTimeScreen(),
+              ),
+              GoRoute(
+                path: 'biometric',
+                builder: (context, state) => const BiometricSetupScreen(),
+              ),
+              GoRoute(
+                path: 'female',
+                builder: (context, state) => const FemaleModeScreen(),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
-      ),
-      GoRoute(
-        path: '/settings',
-        builder: (context, state) => const SettingsScreen(),
-        routes: [
-          GoRoute(
-            path: 'profiles',
-            builder: (context, state) => const ProfileManagementScreen(),
-          ),
-          GoRoute(
-            path: 'notification-time',
-            builder: (context, state) => const NotificationTimeScreen(),
-          ),
-          GoRoute(
-            path: 'biometric',
-            builder: (context, state) => const BiometricSetupScreen(),
-          ),
-          GoRoute(
-            path: 'female',
-            builder: (context, state) => const FemaleModeScreen(),
-          ),
-        ],
       ),
       GoRoute(
         path: '/paywall',

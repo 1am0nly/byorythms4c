@@ -4,6 +4,7 @@ class AppStringsEn {
   static const String appTitle = 'Biorhythms';
   static const String homeTab = 'Home';
   static const String infoTab = 'Info';
+  static const String settingsTab = 'Settings';
   static const String settings = 'Settings';
   static const String physical = 'Physical';
   static const String emotional = 'Emotional';

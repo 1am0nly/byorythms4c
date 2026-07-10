@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:biorhythms_flutter/core/constants/strings.dart';
 
 /// Четыре классических биоритма.
 ///
@@ -7,34 +8,43 @@ import 'dart:math';
 enum BiorhythmType {
   physical(
     period: 23,
-    title: 'Физический',
-    description: 'Сила, выносливость, координация, запас энергии тела.',
+    title: 'Physical',
+    descriptionKey: 'physicalTitle',
   ),
   emotional(
     period: 28,
-    title: 'Эмоциональный',
-    description: 'Настроение, чувствительность, интуиция, нервная устойчивость.',
+    title: 'Emotional',
+    descriptionKey: 'emotionalTitle',
   ),
   intellectual(
     period: 33,
-    title: 'Интеллектуальный',
-    description: 'Память, логика, способность к обучению и анализу.',
+    title: 'Intellectual',
+    descriptionKey: 'intellectualTitle',
   ),
   intuitive(
     period: 38,
-    title: 'Интуитивный',
-    description: 'Интуиция, предчувствие, вдохновение, творческое начало.',
+    title: 'Intuitive',
+    descriptionKey: 'intuitiveTitle',
   );
 
   final int period;
   final String title;
-  final String description;
+  final String descriptionKey;
 
   const BiorhythmType({
     required this.period,
     required this.title,
-    required this.description,
+    required this.descriptionKey,
   });
+
+  String localizedTitle(AppStringsLocale s) {
+    return switch (this) {
+      BiorhythmType.physical => s.physicalTitle,
+      BiorhythmType.emotional => s.emotionalTitle,
+      BiorhythmType.intellectual => s.intellectualTitle,
+      BiorhythmType.intuitive => s.intuitiveTitle,
+    };
+  }
 }
 
 /// Результат расчёта одного цикла для конкретного дня.
@@ -126,14 +136,20 @@ class BiorhythmCalculator {
 
   /// Короткая текстовая сводка одного цикла для пуша.
   /// Пример: «Физический: +72% (подъём)».
-  static String summary(BiorhythmValue value) {
+  static String summary(BiorhythmValue value, {
+    String risingLabel = 'rising',
+    String fallingLabel = 'falling',
+    String criticalLabel = 'critical day',
+    String Function(BiorhythmType)? typeTitle,
+  }) {
     final sign = value.percent >= 0 ? '+' : '';
     final phase = value.isCritical
-        ? 'критический день'
+        ? criticalLabel
         : value.isRising
-            ? 'подъём'
-            : 'спад';
+            ? risingLabel
+            : fallingLabel;
     final pct = value.percent.round();
-    return '${value.type.title}: $sign$pct% ($phase)';
+    final t = typeTitle?.call(value.type) ?? value.type.title;
+    return '$t: $sign$pct% ($phase)';
   }
 }
