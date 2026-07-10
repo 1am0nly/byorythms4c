@@ -2,6 +2,34 @@
 
 Используй этот файл **вместе с** `00_PROJECT_CONTEXT.md`.
 
+## Иерархия агентов
+
+```
+OpenCode (главный, с инструментами)
+├── пишет код, рефакторит, запускает flutter analyze/test/build
+├── читает/изменяет файлы, работает с Git
+├── принимает архитектурные решения
+│
+├── Gemini (чат-ассистент, без инструментов)
+│   └── генерирует код/текст по запросу OpenCode
+│       (store content, release notes, documentation)
+│
+└── DeepSeek (чат-ассистент, без инструментов)
+    └── генерирует код/текст по запросу OpenCode
+        (алгоритмы, оптимизация, сложные multi-file изменения)
+```
+
+**OpenCode** — основной агент, имеет полный доступ к файловой системе, терминалу, Git. Gemini и DeepSeek используются через веб-чат, они не могут читать/писать файлы или запускать команды.
+
+## Workflow с чат-ассистентами
+
+1. OpenCode отправляет задачу Gemini/DeepSeek через веб-чат (с прикреплёнными handoff-файлами)
+2. Чат-ассистент генерирует код/текст
+3. Пользователь копирует ответ в `docs/prompts/GEMINI_answer.md` или `DEEPSEEK_answer.md`
+4. Пользователь сообщает OpenCode: «Ответ залит»
+5. OpenCode читает файл ответа, извлекает код и применяет его в проекте
+6. `flutter analyze` + `flutter test` + commit
+
 ## Текущее состояние проекта
 - **Путь:** `C:\Users\a1am3\biorhythms_flutter`
 - **Версия:** 1.0.0+1, debug APK собирается, release AAB 27.1MB
@@ -69,6 +97,8 @@ flutter build appbundle --release ✅ (27.1MB)
 - Файлы для команды: `README.md`, `STATUS.md`
 
 ## Правила для агентов
+- **OpenCode (главный)**: пишет код, рефакторит, запускает `flutter analyze`/`test`/`build`, работает с Git. Принимает архитектурные решения.
+- **Gemini / DeepSeek (чат-ассистенты)**: генерируют только код/текст. Не имеют доступа к файлам, терминалу, инструментам. OpenCode применяет их код в проекте.
 - Не возвращать к "3 циклам"
 - Не дублировать математику
 - Не возвращать Workmanager / автопуш
@@ -80,7 +110,26 @@ flutter build appbundle --release ✅ (27.1MB)
 ### MEDIUM (#15-31) — желательно до релиза
 ### LOW (#32-42) — опционально
 
-См. `00_PROJECT_CONTEXT.md` → "Known Bugs v0.2.0" для полных описаний.
+## Новые баги — найдены 11.07.2026 (Code Review)
+Эти баги НЕ ловятся `flutter analyze` и существующими тестами. Только ручной code review.
+
+| # | Severity | File | Issue |
+|---|----------|------|-------|
+| B1 | 🔴 Critical | `compatibility_screen.dart` L148,163,178,194 | `int as double` → TypeError crash при нажатии Calculate |
+| B2 | 🟠 High | `compatibility_screen.dart` | Дублированная математика: cos((2π×diff)/period) вместо BiorhythmCalculator |
+| B3 | 🟠 High | `compatibility_screen.dart` | State inconsistency: score хранится в state, bars пересчитываются на каждом build |
+| B4 | 🟠 High | `year_overview_screen.dart` L38 | `startWeekday = firstDay.weekday % 7` — Sunday=0 попадает в колонку Monday |
+| B5 | 🟠 High | `cycle_data.dart` L17,25,31,38,48,56 | Отрицательный modulo: `%` в Dart возвращает negative для negative операндов |
+| B6 | 🟠 High | `cycle_calendar.dart` L68 | `date == today` всегда false (today имеет time components) |
+| B7 | 🟠 High | `female_mode_screen.dart` L148 | Отрицательный ovulation countdown |
+| B8 | 🟡 Low | `year_overview_screen.dart` L175, `cycle_calendar.dart` L95 | Hardcoded Colors.green/red.shade — не theme-aware |
+
+### Приоритет фиксов
+1. **B1** — критический краш, фикс 1 строка: `as double` → `.toDouble()`
+2. **B5** — затрагивает ВСЕ методы cycle_data.dart, фикс: `((days % N) + N) % N`
+3. **B2, B3** — рефакторинг compatibility_screen.dart
+4. **B4, B6, B7** — мелкие логические фиксы
+5. **B8** — косметика
 
 ## План фиксов (очередность)
 - **MEDIUM:** #15-#31
@@ -104,6 +153,9 @@ flutter build appbundle --release ✅ (27.1MB)
 - [x] **Выполнен** — Task 3: Verify biometric fix on device (DN2103)
 - [x] **Выполнен** — Task 4: Localize cycle_data.dart phase strings
 - [x] **Выполнен** — Task 5: Fix year_overview_screen.dart colors to use theme
-- [ ] **TODO** — IAP продукты (monthly_premium, yearly_premium)
+- [x] **Выполнен** — Store metadata + release notes v1.0.0 (Gemini)
+- [x] **Выполнен** — IAP product IDs (monthly_premium, yearly_premium) зафиксированы
+- [x] **Выполнен** — PurchaseProvider инвалидация (DeepSeek)
+- [x] **Выполнен** — Unit тесты для граничных значений и женского цикла (DeepSeek)
 - [ ] **TODO** — AAB upload в Google Play Console
 - [ ] **TODO** — iOS developer account ($99/год)

@@ -1,6 +1,6 @@
 # Статус проекта — Биоритмы v0.2.0
 
-**Дата:** 10.07.2026  
+**Дата:** 11.07.2026  
 **Версия:** 1.0.0+1  
 **Репо:** [github.com/1am0nly/byorythms4c](https://github.com/1am0nly/byorythms4c)
 
@@ -59,3 +59,18 @@ flutter build appbundle --release  ✅ (27.1MB)
 - `compileSdk = flutter.compileSdkVersion` (android-35.jar повреждён в SDK)
 - `flutter_background_service` удалён — пуши через `periodicallyShow`
 - Keystore и `key.properties` в `.gitignore`
+
+## Баги — найдены 11.07.2026 (Code Review)
+
+| # | Severity | File | Issue |
+|---|----------|------|-------|
+| B1 | 🔴 Critical | `compatibility_screen.dart` L148,163,178,194 | `int as double` → TypeError crash |
+| B2 | 🟠 High | `compatibility_screen.dart` | Дублированная математика (не BiorhythmCalculator) |
+| B3 | 🟠 High | `compatibility_screen.dart` | State inconsistency score vs bars |
+| B4 | 🟠 High | `year_overview_screen.dart` L38 | Calendar weekday alignment |
+| B5 | 🟠 High | `cycle_data.dart` L17,25,31,38,48,56 | Отрицательный modulo |
+| B6 | 🟠 High | `cycle_calendar.dart` L68 | Today highlight never shows |
+| B7 | 🟠 High | `female_mode_screen.dart` L148 | Отрицательный ovulation countdown |
+| B8 | 🟡 Low | `year_overview_screen.dart` L175, `cycle_calendar.dart` L95 | Hardcoded Colors |
+
+Все 8 багов — runtime/logic, не ловятся `flutter analyze` и тестами.

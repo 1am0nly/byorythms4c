@@ -1,13 +1,16 @@
-# GEMINI_HANDOFF.md — Контекст для Gemini
+# GEMINI_HANDOFF.md — Контекст для Gemini (чат-ассистент)
+
+## Роль
+Gemini — **чат-ассистент без доступа к инструментам**. Не может читать/писать файлы, запускать команды или выполнять код. Генерирует только текст/код, который OpenCode применяет в проекте.
 
 ## Использование
-Прикрепляй к каждому запросу к Gemini **вместе с**:
+Этот файл прикрепляется к запросу к Gemini **вместе с**:
 1. `00_PROJECT_CONTEXT.md`
 2. `35_AGENT_HANDOFF_CURRENT.md`
 
 ---
 
-## Профиль Gemini в проекте
+## Профиль Gemini
 - **Code generation**: Flutter виджеты, провайдеры, репозитории
 - **Refactoring**: Large multi-file changes, архитектурные изменения
 - **Store content**: Google Play / App Store листинги, release notes, скриншоты
@@ -15,7 +18,7 @@
 
 ---
 
-## Специфичные инструкции для Gemini
+## Специфичные инструкции
 
 ### Code Generation
 ```dart
@@ -45,6 +48,22 @@
 
 ---
 
+## Формат ответа Gemini
+Ты генерируешь **только код и текст**. Не пытайся выполнять команды, читать файлы или изменять их. Укажи полный путь к файлу в комментарии в начале каждого блока кода:
+
+```dart
+// lib/features/foo/bar.dart
+class Bar { ... }
+```
+
+## Workflow с ответами
+1. OpenCode отправляет тебе задачу через чат вместе с `GEMINI_HANDOFF.md` + `35_AGENT_HANDOFF_CURRENT.md` + `00_PROJECT_CONTEXT.md`
+2. Ты генерируешь ответ (код/текст)
+3. Пользователь копирует твой ответ в `docs/prompts/GEMINI_answer.md`
+4. OpenCode читает `GEMINI_answer.md`, извлекает код и применяет в проекте
+
+---
+
 ## Текущий контекст (11.07.2026)
 - **Все HIGH баги #1-14 ИСПРАВЛЕНЫ** (Phase B, 10.07)
 - **Автопуш удалён** — только ручная кнопка "Показать сводку сейчас"
@@ -53,20 +72,11 @@
 - **Female mode**: локализованные фазы (Follicular, Luteal добавлены)
 - **Year overview**: theme-aware цвета (colorScheme.primary/error)
 - **Tests**: 19/19 проходят, `flutter analyze` — 0 issues
+- **Новые баги (11.07)**: 8 багов найдено code review — см. `00_PROJECT_CONTEXT.md` → "Новые баги — найдены 11.07.2026". Критический: B1 (`int as double` краш в compatibility_screen.dart). Высокие: B2-B7 (modulo, calendar, state). Низкий: B8 (hardcoded colors).
 
 ---
 
-## Next tasks для Gemini
-1. **Store listings** (Google Play / App Store) — когда IAP продукты зарегистрированы
-2. **Release notes** для v1.0.0
-3. **Screenshot descriptions** для стора (6 JPG в `store/assets/screenshots/`)
-
----
-
-## Команды проверки
-```bash
-flutter analyze
-flutter test
-flutter build apk --debug
-flutter build appbundle --release
-```
+## Выполненные задачи (из GEMINI_answer.md)
+- ✅ **Store listings** — Google Play, App Store описания, release notes v1.0.0, спецификация скриншотов
+- ✅ **IAP product IDs** — `monthly_premium`, `yearly_premium` зафиксированы в коде
+- ✅ **Release notes** для v1.0.0

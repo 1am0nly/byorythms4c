@@ -177,6 +177,27 @@ flutter build appbundle --release ✅ (27.1MB)
 ### MEDIUM (#15-31) — желательно до релиза
 ### LOW (#32-42) — опционально
 
+## Новые баги — найдены 11.07.2026 (Code Review)
+Эти баги НЕ ловятся `flutter analyze` и существующими тестами. Только ручной code review.
+
+| # | Severity | File | Issue |
+|---|----------|------|-------|
+| B1 | 🔴 Critical | `compatibility_screen.dart` L148,163,178,194 | `int as double` → TypeError crash при нажатии Calculate |
+| B2 | 🟠 High | `compatibility_screen.dart` | Дублированная математика: cos((2π×diff)/period) вместо BiorhythmCalculator |
+| B3 | 🟠 High | `compatibility_screen.dart` | State inconsistency: score хранится в state, bars пересчитываются на каждом build |
+| B4 | 🟠 High | `year_overview_screen.dart` L38 | `startWeekday = firstDay.weekday % 7` — Sunday=0 попадает в колонку Monday |
+| B5 | 🟠 High | `cycle_data.dart` L17,25,31,38,48,56 | Отрицательный modulo: `%` в Dart возвращает negative для negative операндов |
+| B6 | 🟠 High | `cycle_calendar.dart` L68 | `date == today` всегда false (today имеет time components) |
+| B7 | 🟠 High | `female_mode_screen.dart` L148 | Отрицательный ovulation countdown |
+| B8 | 🟡 Low | `year_overview_screen.dart` L175, `cycle_calendar.dart` L95 | Hardcoded Colors.green/red.shade — не theme-aware |
+
+### Приоритет фиксов
+1. **B1** — критический краш, фикс 1 строка: `as double` → `.toDouble()`
+2. **B5** — затрагивает ВСЕ методы cycle_data.dart, фикс: `((days % N) + N) % N`
+3. **B2, B3** — рефакторинг compatibility_screen.dart
+4. **B4, B6, B7** — мелкие логические фиксы
+5. **B8** — косметика
+
 ## План следующих шагов
 - [ ] IAP продукты (monthly_premium, yearly_premium) в Google Play Console
 - [ ] AAB upload в Google Play Console (Internal Testing)
