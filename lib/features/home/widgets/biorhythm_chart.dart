@@ -36,14 +36,12 @@ class BiorhythmChart extends ConsumerWidget {
       return (date, snapshot);
     }).toList();
 
-    // Подписи оси X должны прореживаться при большом диапазоне, иначе на
-    // Premium-диапазоне (±30 дней = 61 точка) они слипаются в нечитаемую
-    // кашу — особенно заметно на экспортированном PNG, где нет клиппинга
-    // экрана и весь текст остаётся впечатан в картинку.
-    // Для free (±7 дней = 15 точек) шаг 2 дня, для premium (±30 дней = 61 точка) — шаг 8 дней.
-    final labelInterval = chartRange > 7
-        ? (totalDays / 8).ceil().clamp(5, totalDays).toDouble()
-        : (totalDays / 10).ceil().clamp(2, totalDays).toDouble();
+    // Подписи оси X прореживаются под фиксированное целевое количество
+    // (~8 подписей), независимо от chartRange — так надёжнее, чем
+    // отдельные формулы для free/premium, которые ранее давали слипание
+    // при определённых totalDays.
+    const targetLabelCount = 8;
+    final labelInterval = (totalDays / targetLabelCount).ceil().clamp(1, totalDays).toDouble();
 
     Widget chart = Container(
       // ВАЖНО: явный фон нужен не только для UI, но и для корректного

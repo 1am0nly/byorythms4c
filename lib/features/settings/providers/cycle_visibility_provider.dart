@@ -23,12 +23,12 @@ class EnabledCyclesNotifier extends AsyncNotifier<Set<BiorhythmType>> {
     }
     try {
       final list = List<String>.from(jsonDecode(val));
-      return list
-          .map((s) => BiorhythmType.values.firstWhere(
-                (t) => t.name == s,
-                orElse: () => BiorhythmType.physical,
-              ))
-          .toSet();
+      final types = <BiorhythmType>{};
+      for (final s in list) {
+        final match = BiorhythmType.values.where((t) => t.name == s);
+        if (match.isNotEmpty) types.add(match.first);
+      }
+      return types.isEmpty ? BiorhythmType.values.toSet() : types;
     } catch (_) {
       return BiorhythmType.values.toSet();
     }
