@@ -58,6 +58,7 @@ class YearOverviewScreen extends ConsumerWidget {
                     year: year,
                     month: month + 1,
                     enabledCycles: enabledCycles,
+                    colorScheme: Theme.of(context).colorScheme,
                   ),
                 ],
               ),
@@ -77,6 +78,7 @@ class _MonthGrid extends StatelessWidget {
   final int year;
   final int month;
   final Set<BiorhythmType> enabledCycles;
+  final ColorScheme colorScheme;
 
   const _MonthGrid({
     required this.strings,
@@ -86,6 +88,7 @@ class _MonthGrid extends StatelessWidget {
     required this.year,
     required this.month,
     required this.enabledCycles,
+    required this.colorScheme,
   });
 
   @override
@@ -144,10 +147,10 @@ class _MonthGrid extends StatelessWidget {
                 : values.reduce((a, b) => a + b) / values.length;
 
             final color = switch (avg) {
-              > 50 => Colors.green.shade300,
-              > 0 => Colors.green.shade100,
-              > -50 => Colors.red.shade100,
-              _ => Colors.red.shade300,
+              > 50 => colorScheme.primary.withOpacity(0.6),
+              > 0 => colorScheme.primary.withOpacity(0.25),
+              > -50 => colorScheme.error.withOpacity(0.25),
+              _ => colorScheme.error.withOpacity(0.6),
             };
 
                 final now = DateTime.now();
@@ -160,7 +163,7 @@ class _MonthGrid extends StatelessWidget {
                 color: color,
                 borderRadius: BorderRadius.circular(2),
                 border: isToday
-                    ? Border.all(color: Colors.blue, width: 2)
+                    ? Border.all(color: colorScheme.primary, width: 2)
                     : null,
               ),
               child: Center(
