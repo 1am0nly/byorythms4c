@@ -13,7 +13,6 @@ import 'package:biorhythms_flutter/features/premium/providers/purchase_provider.
 import 'package:biorhythms_flutter/features/privacy/providers/biometric_provider.dart';
 import 'package:biorhythms_flutter/features/settings/providers/cycle_visibility_provider.dart';
 import 'package:biorhythms_flutter/features/settings/providers/locale_provider.dart';
-import 'package:biorhythms_flutter/features/settings/providers/notification_provider.dart';
 import 'package:biorhythms_flutter/features/settings/providers/theme_provider.dart';
 import 'package:biorhythms_flutter/features/settings/services/notification_service.dart';
 
@@ -197,41 +196,6 @@ class SettingsScreen extends ConsumerWidget {
           _SettingsSection(
             title: s.notificationsSection,
             children: [
-              Consumer(
-                builder: (context, ref, _) {
-                  final enabled =
-                      ref.watch(notificationEnabledProvider).valueOrNull ?? true;
-                  return SwitchListTile(
-                    title: Text(s.notificationsEnabled),
-                    subtitle: Text(s.notificationsEnabledSub),
-                    value: enabled,
-                    onChanged: (v) {
-                      ref
-                          .read(notificationEnabledProvider.notifier)
-                          .setEnabled(v);
-                    },
-                  );
-                },
-              ),
-              Consumer(
-                builder: (context, ref, _) {
-                  final hour =
-                      ref.watch(notificationHourProvider).valueOrNull ?? 9;
-                  final minute =
-                      ref.watch(notificationMinuteProvider).valueOrNull ?? 0;
-                  final time = TimeOfDay(hour: hour, minute: minute);
-                  return ListTile(
-                    leading: Icon(Icons.schedule, color: colorScheme.primary),
-                    title: Text(s.notificationTime),
-                    subtitle: Text(
-                      '${time.format(context)}\n${s.notificationTimingNote}',
-                    ),
-                    isThreeLine: true,
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => context.push('/settings/notification-time'),
-                  );
-                },
-              ),
               ListTile(
                 leading: Icon(Icons.notifications_active, color: colorScheme.primary),
                 title: Text(s.showSummaryNow),

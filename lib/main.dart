@@ -11,7 +11,6 @@ import 'features/onboarding/providers/has_seen_onboarding_provider.dart';
 import 'features/premium/providers/purchase_provider.dart';
 import 'features/settings/providers/locale_provider.dart';
 import 'features/settings/providers/theme_provider.dart';
-import 'features/settings/services/notification_scheduler.dart';
 import 'features/settings/services/notification_service.dart';
 
 void main() async {
@@ -35,14 +34,11 @@ void main() async {
 
   final notifService = container.read(notificationServiceProvider);
   await notifService.initialize();
-  container.read(notificationSchedulerProvider).initialize();
 
   final s = AppStringsLocale(savedLocale);
 
-  // ВАЖНО: Workmanager полностью убран (см. 36_ZCODE_REMOVE_WORKMANAGER.md).
-  // Ежедневные пуши идут через NotificationService.showDailyNotification()
-  // (periodicallyShow), которая вызывается внутри notificationScheduler.initialize()
-  // выше — никакой отдельной фоновой регистрации задач здесь больше не нужно.
+  // ВАЖНО: Автопуш через periodicallyShow убран (промпт 41/43).
+  // Оставлена только ручная кнопка "Показать сводку сейчас" с реальными данными.
   Future<void> startApp() async {
     runApp(
       UncontrolledProviderScope(

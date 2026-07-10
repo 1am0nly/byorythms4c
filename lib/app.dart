@@ -20,7 +20,6 @@ import 'package:biorhythms_flutter/features/premium/screens/paywall_screen.dart'
 import 'package:biorhythms_flutter/features/privacy/screens/biometric_setup_screen.dart';
 import 'package:biorhythms_flutter/features/settings/providers/locale_provider.dart';
 import 'package:biorhythms_flutter/features/settings/providers/theme_provider.dart';
-import 'package:biorhythms_flutter/features/settings/screens/notification_time_screen.dart';
 import 'package:biorhythms_flutter/features/settings/screens/profile_management_screen.dart';
 import 'package:biorhythms_flutter/features/settings/screens/settings_screen.dart';
 
@@ -107,10 +106,6 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'profiles',
                 builder: (context, state) => const ProfileManagementScreen(),
-              ),
-              GoRoute(
-                path: 'notification-time',
-                builder: (context, state) => const NotificationTimeScreen(),
               ),
               GoRoute(
                 path: 'biometric',
