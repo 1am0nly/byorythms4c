@@ -37,7 +37,7 @@ class IsPremiumNotifier extends AsyncNotifier<bool> {
         _subscription?.cancel();
       },
       onError: (error) {
-        // handle error silently
+        debugPrint('Purchase stream error: $error');
       },
     );
 
@@ -77,19 +77,26 @@ class IsPremiumNotifier extends AsyncNotifier<bool> {
   Future<void> _listenToPurchaseUpdated(
       List<PurchaseDetails> purchaseDetailsList) async {
     for (var purchaseDetails in purchaseDetailsList) {
-      if (purchaseDetails.status == PurchaseStatus.purchased ||
-          purchaseDetails.status == PurchaseStatus.restored) {
-        if (purchaseDetails.purchaseID == null ||
-            purchaseDetails.purchaseID!.isEmpty) {
-          continue;
-        }
-        final planType =
-            purchaseDetails.productID.contains('yearly') ? 'yearly' : 'monthly';
-        final days = _realPurchaseDurationDays(planType);
-        await setPremium(true, days: days);
-        if (purchaseDetails.pendingCompletePurchase) {
-          await InAppPurchase.instance.completePurchase(purchaseDetails);
-        }
+      switch (purchaseDetails.status) {
+        case PurchaseStatus.purchased:
+        case PurchaseStatus.restored:
+          if (purchaseDetails.purchaseID == null ||
+              purchaseDetails.purchaseID!.isEmpty) {
+            continue;
+          }
+          final planType =
+              purchaseDetails.productID.contains('yearly') ? 'yearly' : 'monthly';
+          final days = _realPurchaseDurationDays(planType);
+          await setPremium(true, days: days);
+          if (purchaseDetails.pendingCompletePurchase) {
+            await InAppPurchase.instance.completePurchase(purchaseDetails);
+          }
+        case PurchaseStatus.pending:
+        case PurchaseStatus.canceled:
+        case PurchaseStatus.error:
+          if (purchaseDetails.pendingCompletePurchase) {
+            await InAppPurchase.instance.completePurchase(purchaseDetails);
+          }
       }
     }
   }

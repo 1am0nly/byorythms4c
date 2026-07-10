@@ -244,7 +244,7 @@ lib/
 | 16 | Notif cancel gap | `cancelAll()` перед `periodicallyShow()` — окно без уведомления, если убьют процесс | `notification_scheduler.dart:89-112` |
 | 17 | Notif dispose | `dispose()` пустой — listeners не отписываются | `notification_scheduler.dart:123` |
 | 18 | Notif stale person | `person` читается ДО `cancelAll()` — если юзер переключил профиль за асинхронный гэп, пуш уйдёт старому | `notification_scheduler.dart:86-92` |
-| 19 | IAP no error/cancel | `purchaseStream` не обрабатывает `error`/`canceled`/`pending` — транзакция зависает | `purchase_provider.dart:78-89` |
+| 19 | IAP no error/cancel | FIXED — switch over all `PurchaseStatus` variants + error logging |
 | 20 | IAP free fallback | `_simulatePurchase()` вызывается когда ProductDetails пуст (misconfigured продукт) — даёт премиум бесплатно | `purchase_provider.dart:144-150` |
 | 21 | IAP no auto-restore | При старте не вызывается `iap.restorePurchases()` — после переустановки премиум теряется | `purchase_provider.dart:23-58` |
 | 22 | IAP stale expiry | `premiumExpiry` не очищается при `setPremium(false)` — days remaining показывает неверные цифры | `purchase_provider.dart:50-101` |
