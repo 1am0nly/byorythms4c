@@ -105,7 +105,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const ProfileManagementScreen(),
           ),
           GoRoute(
-            path: 'time',
+            path: 'notification-time',
             builder: (context, state) => const NotificationTimeScreen(),
           ),
           GoRoute(

@@ -166,6 +166,15 @@ class AppStringsEn {
   static const String notificationIntellectual = 'Intellectual:';
   static const String notificationIntuitive = 'Intuitive:';
   static const String notificationCritical = 'Warning: critical days!';
+  static const String showSummaryNow = 'Show summary now';
+  static const String showSummaryNowSub = 'Instant notification with biorhythms';
+  static const String notificationSentSnack = 'Notification sent — check your notification shade';
+  static const String visibleCyclesSection = 'Visible Cycles';
+  static const String notificationsEnabled = 'Daily notifications';
+  static const String notificationsEnabledSub = 'Daily biorhythm summary';
+  static const String notificationTimingNote = 'Notification arrives approximately every 24 hours';
+  static const String languageLabel = 'Language';
+  static const String premiumExpiryUntil = 'until {date}';
   static const String biometricAccessReason = 'Authenticate to access the app';
   static const String accessDenied = 'Access denied';
   static const String noPurchasesFound = 'No purchases found to restore';

@@ -33,9 +33,6 @@ class SettingsScreen extends ConsumerWidget {
           ).name)
         : '—';
     final themeMode = ref.watch(themeModeProvider).valueOrNull ?? ThemeMode.system;
-    final notifEnabled = ref.watch(notificationEnabledProvider).valueOrNull ?? true;
-    final notifHour = ref.watch(notificationHourProvider).valueOrNull ?? 9;
-    final notifMinute = ref.watch(notificationMinuteProvider).valueOrNull ?? 0;
     final isPremium = ref.watch(isPremiumProvider).valueOrNull ?? false;
     final biometricEnabled = ref.watch(biometricEnabledProvider);
     final femaleEnabled = ref.watch(femaleCycleEnabledProvider);
@@ -200,43 +197,73 @@ class SettingsScreen extends ConsumerWidget {
           _SettingsSection(
             title: s.notificationsSection,
             children: [
-              SwitchListTile(
-                title: Text(s.dailyPush),
-                value: notifEnabled,
-                onChanged: (v) {
-                  ref.read(notificationEnabledProvider.notifier).setEnabled(v);
+              Consumer(
+                builder: (context, ref, _) {
+                  final enabled =
+                      ref.watch(notificationEnabledProvider).valueOrNull ?? true;
+                  return SwitchListTile(
+                    title: Text(s.notificationsEnabled),
+                    subtitle: Text(s.notificationsEnabledSub),
+                    value: enabled,
+                    onChanged: (v) {
+                      ref
+                          .read(notificationEnabledProvider.notifier)
+                          .setEnabled(v);
+                    },
+                  );
+                },
+              ),
+              Consumer(
+                builder: (context, ref, _) {
+                  final hour =
+                      ref.watch(notificationHourProvider).valueOrNull ?? 9;
+                  final minute =
+                      ref.watch(notificationMinuteProvider).valueOrNull ?? 0;
+                  final time = TimeOfDay(hour: hour, minute: minute);
+                  return ListTile(
+                    leading: Icon(Icons.schedule, color: colorScheme.primary),
+                    title: Text(s.notificationTime),
+                    subtitle: Text(
+                      '${time.format(context)}\n${s.notificationTimingNote}',
+                    ),
+                    isThreeLine: true,
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => context.push('/settings/notification-time'),
+                  );
                 },
               ),
               ListTile(
-                title: Text(s.time),
-                subtitle: Text(
-                  '${notifHour.toString().padLeft(2, '0')}:${notifMinute.toString().padLeft(2, '0')}',
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.push('/settings/time'),
-              ),
-              ListTile(
-                title: Text(s.forWhom),
-                subtitle: Text(selectedName),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {},
-              ),
-              if (notifEnabled)
-                ListTile(
-                  title: Text('Тестовый пуш сейчас'),
-                  subtitle: Text('Проверить, что уведомления приходят'),
-                  leading: Icon(Icons.notifications_active, color: colorScheme.primary),
-                  onTap: () {
-                    ref.read(notificationServiceProvider).showTestNotificationNow();
+                leading: Icon(Icons.notifications_active, color: colorScheme.primary),
+                title: Text(s.showSummaryNow),
+                subtitle: Text(s.showSummaryNowSub),
+                onTap: () async {
+                  final service = ref.read(notificationServiceProvider);
+                  final person = ref.read(selectedPersonProvider);
+                  final snapshot = ref.read(selectedSnapshotProvider);
+                  final body = service.buildNotificationBody(
+                    snapshot,
+                    person?.name ?? '',
+                    physicalLabel: s.notificationPhysical,
+                    emotionalLabel: s.notificationEmotional,
+                    intellectualLabel: s.notificationIntellectual,
+                    intuitiveLabel: s.notificationIntuitive,
+                    criticalLabel: s.notificationCritical,
+                  );
+                  await service.showTestNotificationNow(
+                    title: s.notificationTitle,
+                    body: body,
+                  );
+                  if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Тестовое уведомление отправлено — проверь шторку')),
+                      SnackBar(content: Text(s.notificationSentSnack)),
                     );
-                  },
-                ),
+                  }
+                },
+              ),
             ],
           ),
           _SettingsSection(
-            title: 'Отображаемые циклы',
+            title: s.visibleCyclesSection,
             children: [
               Consumer(
                 builder: (context, ref, _) {
@@ -291,21 +318,21 @@ class SettingsScreen extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: SegmentedButton<ThemeMode>(
-                  segments: const [
+                  segments: [
                     ButtonSegment(
                       value: ThemeMode.system,
-                      label: Text('System'),
-                      icon: Icon(Icons.auto_mode),
+                      label: Text(s.system),
+                      icon: const Icon(Icons.auto_mode),
                     ),
                     ButtonSegment(
                       value: ThemeMode.light,
-                      label: Text('Light'),
-                      icon: Icon(Icons.light_mode),
+                      label: Text(s.light),
+                      icon: const Icon(Icons.light_mode),
                     ),
                     ButtonSegment(
                       value: ThemeMode.dark,
-                      label: Text('Dark'),
-                      icon: Icon(Icons.dark_mode),
+                      label: Text(s.dark),
+                      icon: const Icon(Icons.dark_mode),
                     ),
                   ],
                   selected: {themeMode},
@@ -317,7 +344,7 @@ class SettingsScreen extends ConsumerWidget {
               const Divider(height: 1),
               ListTile(
                 leading: const Icon(Icons.language),
-                title: const Text('Язык / Language'),
+                title: Text(s.languageLabel),
                 trailing: SegmentedButton<String>(
                   segments: const [
                     ButtonSegment(value: 'ru', label: Text('Рус')),
@@ -418,6 +445,7 @@ class _PremiumDaysLeft extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final s = AppStrings.of(context);
     final days = ref.watch(premiumDaysRemainingProvider);
     final expiryAsync = ref.watch(premiumExpiryProvider);
     final expiry = expiryAsync.valueOrNull;
@@ -434,7 +462,7 @@ class _PremiumDaysLeft extends ConsumerWidget {
         Text('$days $daysLabel'),
         if (dateStr.isNotEmpty)
           Text(
-            'до $dateStr',
+            s.premiumExpiryUntil(dateStr),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),

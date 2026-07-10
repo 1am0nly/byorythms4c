@@ -41,7 +41,7 @@ void main() async {
 
   // ВАЖНО: Workmanager полностью убран (см. 36_ZCODE_REMOVE_WORKMANAGER.md).
   // Ежедневные пуши идут через NotificationService.showDailyNotification()
-  // (zonedSchedule), которая уже вызвана внутри notificationScheduler.initialize()
+  // (periodicallyShow), которая вызывается внутри notificationScheduler.initialize()
   // выше — никакой отдельной фоновой регистрации задач здесь больше не нужно.
   Future<void> startApp() async {
     runApp(

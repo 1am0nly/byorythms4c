@@ -34,7 +34,7 @@ class NotificationService {
     }
 
     const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/launcher_icon');
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -151,28 +151,33 @@ class NotificationService {
     }
   }
 
-  /// Показывает уведомление немедленно (для тестов).
-  Future<void> showTestNotificationNow() async {
+  /// Показывает уведомление немедленно с реальным содержанием биоритмов.
+  Future<void> showTestNotificationNow({
+    required String title,
+    required String body,
+  }) async {
     await initialize();
     debugPrint('[NotificationService] showTestNotificationNow() called');
 
-    const androidDetails = AndroidNotificationDetails(
+    final androidDetails = AndroidNotificationDetails(
       'biorhythm_daily_v2',
       'Daily Biorhythm',
       channelDescription: 'Daily summary of your biorhythms',
       importance: Importance.high,
       priority: Priority.high,
+      styleInformation: BigTextStyleInformation(body),
+      largeIcon: const DrawableResourceAndroidBitmap('mipmap/launcher_icon'),
     );
     const iosDetails = DarwinNotificationDetails();
-    const details = NotificationDetails(
+    final details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
 
     await _plugin.show(
       999,
-      'Тестовое уведомление',
-      'Если ты это видишь — flutter_local_notifications работает',
+      title,
+      body,
       details,
     );
     debugPrint('[NotificationService] showTestNotificationNow() completed — check status bar NOW');

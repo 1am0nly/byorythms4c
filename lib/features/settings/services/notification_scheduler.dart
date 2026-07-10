@@ -1,8 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:biorhythms_flutter/core/constants/strings.dart';
-import 'package:biorhythms_flutter/data/database/providers.dart';
 import 'package:biorhythms_flutter/domain/biorhythm/biorhythm_calculator.dart';
 import 'package:biorhythms_flutter/features/home/providers/person_providers.dart';
+import 'package:biorhythms_flutter/features/settings/providers/locale_provider.dart';
 import 'package:biorhythms_flutter/features/settings/providers/notification_provider.dart';
 import 'package:biorhythms_flutter/features/settings/services/notification_service.dart';
 
@@ -85,22 +86,19 @@ class NotificationScheduler {
     final person = _ref.read(selectedPersonProvider);
     if (person == null) return;
 
-    final dao = _ref.read(settingsDaoProvider);
-    final saved = await dao.get('locale');
-    final isEn = saved == 'en';
-    final s = AppStringsLocale(isEn ? 'en' : 'ru');
+    await service.cancelAll();
 
-    // .value! безопасен здесь: _maybeScheduleOrCancel уже проверил hasValue
-    // для обоих провайдеров до вызова этой цепочки.
-    final hour = _ref.read(notificationHourProvider).value!;
-    final minute = _ref.read(notificationMinuteProvider).value!;
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
+    final hour = _ref.read(notificationHourProvider).value ?? 9;
+    final minute = _ref.read(notificationMinuteProvider).value ?? 0;
+    final locale = _ref.read(localeProvider).valueOrNull ?? const Locale('ru');
+    final s = AppStringsLocale(locale.languageCode);
 
+    final today = DateTime.now();
     final snapshot = BiorhythmCalculator.calculate(
       birthDate: person.birthDate,
-      targetDate: today,
+      targetDate: DateTime(today.year, today.month, today.day),
     );
+
     final body = service.buildNotificationBody(
       snapshot,
       person.name,
@@ -111,7 +109,6 @@ class NotificationScheduler {
       criticalLabel: s.notificationCritical,
     );
 
-    await service.cancelAll();
     await service.showDailyNotification(
       id: 1,
       title: s.notificationTitle,

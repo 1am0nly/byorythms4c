@@ -237,6 +237,17 @@ class AppStringsLocale {
   String get notificationIntellectual => _isEn ? AppStringsEn.notificationIntellectual : 'Интеллектуальный:';
   String get notificationIntuitive => _isEn ? AppStringsEn.notificationIntuitive : 'Интуитивный:';
   String get notificationCritical => _isEn ? AppStringsEn.notificationCritical : 'Внимание: критические дни!';
+  String get showSummaryNow => _isEn ? AppStringsEn.showSummaryNow : 'Показать сводку сейчас';
+  String get showSummaryNowSub => _isEn ? AppStringsEn.showSummaryNowSub : 'Мгновенное уведомление с биоритмами';
+  String get notificationSentSnack => _isEn ? AppStringsEn.notificationSentSnack : 'Уведомление отправлено — проверь шторку';
+  String get visibleCyclesSection => _isEn ? AppStringsEn.visibleCyclesSection : 'Отображаемые циклы';
+  String get notificationsEnabled => _isEn ? AppStringsEn.notificationsEnabled : 'Ежедневные уведомления';
+  String get notificationsEnabledSub => _isEn ? AppStringsEn.notificationsEnabledSub : 'Ежедневная сводка биоритмов';
+  String get notificationTimingNote => _isEn ? AppStringsEn.notificationTimingNote : 'Уведомление приходит примерно раз в 24 часа';
+  String get languageLabel => _isEn ? AppStringsEn.languageLabel : 'Язык';
+  String premiumExpiryUntil(String date) => _isEn
+      ? AppStringsEn.premiumExpiryUntil.replaceFirst('{date}', date)
+      : 'до $date';
   String get biometricAccessReason => _isEn ? AppStringsEn.biometricAccessReason : 'Подтвердите личность для доступа к приложению';
   String get accessDenied => _isEn ? AppStringsEn.accessDenied : 'Доступ заблокирован';
   String get unlock => _isEn ? 'Unlock' : 'Разблокировать';
