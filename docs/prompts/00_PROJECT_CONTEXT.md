@@ -4,32 +4,25 @@
 - Проект находится в `C:\Users\a1am3\biorhythms_flutter`.
 - Полноценное приложение с 10 фичами.
 - В домене **4 биоритма**: физический 23, эмоциональный 28, интеллектуальный 33, интуитивный 38 дней.
-- **19 тестов**, **13+ маршрутов**.
-- Результат: `flutter analyze` ✅, `flutter test` 19/19 ✅, `flutter build appbundle --release` 27.1MB ✅
-- `compileSdk = flutter.compileSdkVersion` (~34, android-35 сломан в локальном SDK)
-- Релизная подпись: upload-keystore.jks + key.properties
-- Репо: https://github.com/1am0nly/byorythms4c (main + gh-pages)
-- Store контент: `store/assets/` (тексты), `store/assets/screenshots/` (6 JPG), `store/metadata/`, `store/privacy/`
+- **19 тестов**, **15+ маршрутов**, **63 Dart-файла**.
+- Результат: `flutter analyze` ✅ (0 issues), `flutter test` 19/19 ✅, `flutter build appbundle --release` 27.1MB ✅
+- `compileSdk = flutter.compileSdkVersion` (~34, android-35.jar повреждён в локальном SDK — релизный AAB с 35 успешен, debug падает)
+- **Биометрия починена**: `MainActivity` наследует `FlutterFragmentActivity` (required by `local_auth`), а не `FlutterActivity`. Было: `PlatformException no_fragment_activity` — пользователь не мог войти в приложение.
 - Релизная подпись: upload-keystore.jks + key.properties (в .gitignore)
+- Репо: https://github.com/1am0nly/byorythms4c (main + gh-pages)
+- Store контент: `store/assets/` (тексты), `store/assets/screenshots/` (6 JPG — реальный DN2103), `store/metadata/`, `store/privacy/` (на gh-pages)
 - `flutter_background_service`: удалён из зависимостей и AndroidManifest
+- **Иконка в настройках**: `AndroidManifest.xml android:label="Biorhythms"` (было `biorhythms_flutter`)
+- **iOS**: добавлен `NSFaceIDUsageDescription` в Info.plist
+- **Последний коммит**: `2816b01` — запушен в origin/main
 
 ## Решение по уведомлениям (10.07.2026)
-- Ежедневные пуши реализованы через `flutter_local_notifications` +
-  `periodicallyShow(RepeatInterval.daily)` — повторяется каждые 24ч от момента включения.
-- **Workmanager удалён** — он не выполнял никакой полезной работы (только
-  инициализировал плагин раз в час без показа уведомлений) и был мёртвым
-  кодом, дублирующим уже рабочий механизм. Пакет `workmanager` и файл
-  `workmanager_callback.dart` больше не используются в проекте.
-- **Осознанный компромисс:** текст ежедневного пуша (проценты биоритмов)
-  пересчитывается только при изменении настроек уведомлений или смене
-  профиля (`notification_scheduler.dart` слушает `notificationEnabledProvider`,
-  `notificationHourProvider`, `notificationMinuteProvider`,
-  `selectedPersonProvider`). Если пользователь не открывал приложение и не
-  менял эти настройки много дней подряд, проценты в уведомлении могут не
-  отражать актуальный день. Это принято ради простоты и надёжности —
-  не пытаться "починить" это добавлением обратно фонового пересчёта без
-  явного запроса на это.
-- Добавлена кнопка **«Тестовый пуш сейчас»** в Settings → Уведомления для диагностики.
+- Ежедневные пуши — `periodicallyShow(RepeatInterval.daily)`, автопуш **включён** (option B). Если не заработает на реальных устройствах — будет выпилен перед релизом.
+- **Workmanager удалён** — не выполнял никакой полезной работы (только инициализировал плагин раз в час без показа уведомлений).
+- **Осознанный компромисс:** текст пуша пересчитывается только при изменении настроек/смене профиля. Если не открывать приложение много дней — проценты могут устареть.
+- **Ручная кнопка:** «Показать сводку сейчас» в Settings → Уведомления. Отображает реальные проценты биоритмов (не заглушку).
+- **BigTextStyle** + **largeIcon** (`launcher_icon`) — в развёрнутом уведомлении полный текст всех циклов + цветной логотип.
+- **Автопуш использует today**: `BiorhythmCalculator.calculate()` с `DateTime.now()`, а не `selectedSnapshotProvider` (зависит от даты на экране).
 
 ## Правило для всех агентов
 - Не возвращать проект к формулировкам и UI про "3 цикла".
@@ -187,13 +180,18 @@ lib/
 7. ✅ **День 7** — Liquid Glass redesign (home/paywall/settings), DB-миграции, widget-тесты, переключатели циклов, иконка «Квантовая волна», тестовый пуш
 
 ## Что осталось до публикации
-- Реальные скриншоты для стора (пока заглушки в `store/assets/screenshots.txt`)
-- Регистрация IAP продуктов `yearly_premium` / `monthly_premium` в консолях App Store Connect / Google Play Console
-- Серверная валидация чеков покупок (App Store Server Notifications / Google Play RTDN) — сейчас `premiumExpiry` хранится только локально в drift и теоретически подделываемо
-- Release-подпись APK/AAB
-- Решение вопроса `compileSdk 35`
-- CI/CD (Codemagic / GitHub Actions)
-- Контент сторов: описания, скриншоты, release notes (Gemini)
+- [x] Реальные скриншоты для стора (6 JPG с DN2103, `store/assets/screenshots/`)
+- [x] Release-подпись APK/AAB (upload-keystore.jks + key.properties)
+- [x] Контент сторов: описания, скриншоты дескрипшены, release notes (Gemini)
+- [x] Privacy Policy web page (на gh-pages)
+- [x] Биометрия: фикс блокировки входа (FlutterFragmentActivity)
+- [x] Иконка/название приложения (Biorhythms, кастомный лаунчер-иконки)
+- [ ] GitHub Pages: включить в Settings → Pages → Branch: gh-pages
+- [ ] Feature graphic (1024×500) для Google Play
+- [ ] Регистрация IAP продуктов `yearly_premium` / `monthly_premium` в Google Play Console
+- [ ] AAB upload в Google Play Console (Internal Testing)
+- [ ] iOS developer account ($99/год)
+- [ ] CI/CD (Codemagic / GitHub Actions) — опционально
 
 ## Принцип дизайна главного экрана
 **Чистый и минималистичный.** На главном — только:
@@ -206,10 +204,12 @@ lib/
 Всё остальное (добавить человека, время пуша, тема, EULA) — в Настройках.
 
 ## Новые возможности (10.07.2026)
-- **Переключатели циклов** (`enabledCyclesProvider`): пользователь может скрывать/показывать любой из 4 циклов на графике, в сводке, в точках и в статистике. Настройка сохраняется в БД (`enabledCycles` JSON). В настройках — секция «Отображаемые циклы» со свитчами.
-- **Интерактивная легенда графика**: тап по строке легенды скрывает/показывает соответствующую линию. Неактивные циклы — opacity 0.3, зачёркнутый текст.
-- **Подписи оси X**: для free (15 дней) шаг 2 дня, для premium (61 день) шаг 8 дней, `reservedSize: 36` — подписи не слипаются.
-- **Иконка «Квантовая волна»**: squircle + 4 переплетающиеся синусоиды в 4 цветах циклов, glow-эффект. Android adaptive icon (foreground/background) + iOS все размеры.
-- **Тестовый пуш**: кнопка в Settings → Уведомления → «Тестовый пуш сейчас» для диагностики доставки.
-- **DB-миграция**: `schemaVersion: 2` + пустой `MigrationStrategy.onUpgrade` — заготовка на будущее.
-- **Widget-тесты**: `test/home_4_cycles_test.dart` проверяет рендер всех 4 циклов в DailySummary и BiorhythmDots.
+- **Переключатели циклов** (`enabledCyclesProvider`): скрывать/показывать любой цикл на графике/сводке/точках. Настройка сохраняется в БД. `orElse`-баг починен — нераспознанные JSON-значения игнорируются.
+- **Интерактивная легенда графика**: тап → скрыть/показать линию. Неактивные циклы — opacity 0.3.
+- **Подписи оси X**: `targetLabelCount = 8`, `reservedSize = 36` — адаптивный интервал, подписи не слипаются.
+- **Иконка «Квантовая волна»**: squircle + 4 синусоиды. Android adaptive icon + iOS все размеры. `flutter_launcher_icons` перегенерирован, `launcher_icon.png` во всех плотностях.
+- **Биометрия починена**: `MainActivity: FlutterFragmentActivity()` вместо `FlutterActivity`. Было: `PlatformException no_fragment_activity`.
+- **Уведомления**: автопуш через `periodicallyShow(daily)`. Ручная кнопка «Показать сводку сейчас» с реальными данными. `BigTextStyleInformation` + `largeIcon` с логотипом. Иконка в шторке: `@mipmap/launcher_icon`.
+- **Локализация настроек**: все секции (тема, циклы, уведомления, премиум-дата) — через `AppStrings`, RU/EN.
+- **DB-миграция**: `schemaVersion: 2` + пустой `MigrationStrategy.onUpgrade`.
+- **Widget-тесты**: `test/home_4_cycles_test.dart` — 4 цикла в DailySummary и BiorhythmDots.
