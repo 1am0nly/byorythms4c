@@ -50,3 +50,6 @@ app.*.map.json
 *.jks
 key.properties
 .env
+
+# Local prompts (not for GitHub)
+docs/prompts/
