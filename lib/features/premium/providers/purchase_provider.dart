@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:biorhythms_flutter/data/database/providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final isPremiumProvider =
     AsyncNotifierProvider<IsPremiumNotifier, bool>(IsPremiumNotifier.new);
@@ -19,6 +21,58 @@ final premiumDaysRemainingProvider = Provider<int>((ref) {
   final expiry = expiryAsync.valueOrNull;
   if (expiry == null) return 0;
   return expiry.difference(DateTime.now()).inDays.clamp(0, 365000);
+});
+
+/// Кэш цен на 24 часа (в памяти + SharedPreferences)
+class PremiumPricingCache {
+  static const String _prefsKey = 'premium_pricing_cache_v1';
+  static const Duration _ttl = Duration(hours: 24);
+
+  PremiumPricing? _memoryCache;
+  DateTime? _cachedAt;
+
+  Future<void> init() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonStr = prefs.getString(_prefsKey);
+    if (jsonStr != null) {
+      try {
+        final data = json.decode(jsonStr) as Map<String, dynamic>;
+        final cachedAt = DateTime.parse(data['cachedAt'] as String);
+        if (DateTime.now().difference(cachedAt) < _ttl) {
+          _memoryCache = PremiumPricing.fromJson(data['pricing']);
+          _cachedAt = cachedAt;
+        }
+      } catch (_) {
+        // corrupt cache, ignore
+      }
+    }
+  }
+
+  PremiumPricing? get() {
+    if (_memoryCache != null && _cachedAt != null) {
+      if (DateTime.now().difference(_cachedAt!) < _ttl) {
+        return _memoryCache;
+      }
+    }
+    return null;
+  }
+
+  Future<void> set(PremiumPricing pricing) async {
+    _memoryCache = pricing;
+    _cachedAt = DateTime.now();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_prefsKey, json.encode({
+      'cachedAt': _cachedAt!.toIso8601String(),
+      'pricing': pricing.toJson(),
+    }));
+  }
+}
+
+final premiumPricingCacheProvider = Provider<PremiumPricingCache>((ref) {
+  final cache = PremiumPricingCache();
+  // Инициализация асинхронная, но не блокируем build
+  cache.init();
+  return cache;
 });
 
 class IsPremiumNotifier extends AsyncNotifier<bool> {
@@ -226,9 +280,34 @@ class PremiumPricing {
     this.monthlyPerMonth = '141 ₽/мес',
     this.trialDays = 3,
   });
+
+  factory PremiumPricing.fromJson(Map<String, dynamic> json) {
+    return PremiumPricing(
+      monthlyPrice: json['monthlyPrice'] as String? ?? '249 ₽',
+      yearlyPrice: json['yearlyPrice'] as String? ?? '1 690 ₽',
+      monthlyPerMonth: json['monthlyPerMonth'] as String? ?? '141 ₽/мес',
+      trialDays: json['trialDays'] as int? ?? 3,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'monthlyPrice': monthlyPrice,
+      'yearlyPrice': yearlyPrice,
+      'monthlyPerMonth': monthlyPerMonth,
+      'trialDays': trialDays,
+    };
+  }
 }
 
-Future<PremiumPricing> _fetchPremiumPricing() async {
+Future<PremiumPricing> _fetchPremiumPricing(Ref ref) async {
+  // Check cache first
+  final cache = ref.read(premiumPricingCacheProvider);
+  final cached = cache.get();
+  if (cached != null) {
+    return cached;
+  }
+
   final iap = InAppPurchase.instance;
   final bool available = await iap.isAvailable().catchError((_) => false);
   if (!available) {
@@ -248,14 +327,16 @@ Future<PremiumPricing> _fetchPremiumPricing() async {
         yearly = product.price;
       }
     }
-    // Calculate monthly equivalent from yearly price
     int yearlyAmount = int.tryParse(yearly.replaceAll(RegExp(r'[^\d]'), '')) ?? 1690;
     String monthlyPerMonth = '${(yearlyAmount / 12).round()} ₽/мес';
-    return PremiumPricing(
+    final pricing = PremiumPricing(
       monthlyPrice: monthly,
       yearlyPrice: yearly,
       monthlyPerMonth: monthlyPerMonth,
     );
+    // Save to cache
+    await cache.set(pricing);
+    return pricing;
   } catch (e) {
     debugPrint('Failed to fetch premium pricing: $e');
     return const PremiumPricing();
@@ -263,5 +344,5 @@ Future<PremiumPricing> _fetchPremiumPricing() async {
 }
 
 final premiumPricingProvider = FutureProvider<PremiumPricing>((ref) async {
-  return await _fetchPremiumPricing();
+  return await _fetchPremiumPricing(ref);
 });
