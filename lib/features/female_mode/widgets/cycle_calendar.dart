@@ -63,7 +63,10 @@ class CycleCalendar extends StatelessWidget {
                 final isFertile =
                     cycleDay >= fertileStart && cycleDay <= fertileEnd;
                 final isOvulationDay = cycleDay == ovulationDay;
-                final isToday = date == today;
+                // Compare date-only: DateTime.now() includes time, date is midnight.
+                final isToday = date.year == today.year &&
+                    date.month == today.month &&
+                    date.day == today.day;
 
                 Color? bgColor;
                 if (isMenstruating) {
@@ -92,7 +95,7 @@ class CycleCalendar extends StatelessWidget {
                         fontWeight:
                             isToday ? FontWeight.bold : FontWeight.normal,
                         color: isOvulationDay
-                            ? Colors.green.shade800
+                            ? Theme.of(context).colorScheme.primary
                             : null,
                       ),
                     ),

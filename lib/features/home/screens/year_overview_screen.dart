@@ -33,7 +33,8 @@ class YearOverviewScreen extends ConsumerWidget {
           final firstDay = DateTime(year, month + 1, 1);
           final lastDay = DateTime(year, month + 2, 0);
           final daysInMonth = lastDay.day;
-          final startWeekday = firstDay.weekday % 7;
+          // DateTime.weekday: 1=Monday..7=Sunday. Header is Mon-Sun, so Monday=0.
+          final startWeekday = (firstDay.weekday - 1) % 7;
 
           return Card(
             margin: const EdgeInsets.symmetric(vertical: 4),
@@ -172,7 +173,7 @@ class _MonthGrid extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 9,
                     fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                    color: avg > 0 ? Colors.green.shade900 : Colors.red.shade900,
+                    color: avg > 0 ? colorScheme.primary : colorScheme.error,
                   ),
                 ),
               ),

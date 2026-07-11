@@ -139,7 +139,9 @@ class FemaleModeScreen extends ConsumerWidget {
                         label: s.ovulationLabel,
                         value: cycleData.isOvulationDayOn(now)
                             ? s.todayLabel
-                            : s.inDays.replaceFirst('{n}', '${cycleData.cycleLength ~/ 2 - cycleData.dayInCycleOn(now)}'),
+                            : s.inDays.replaceFirst(
+                                '{n}',
+                                '${((cycleData.cycleLength ~/ 2 - cycleData.dayInCycleOn(now)) % cycleData.cycleLength + cycleData.cycleLength) % cycleData.cycleLength}'),
                       ),
                     ],
                   ),

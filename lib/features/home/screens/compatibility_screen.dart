@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -18,6 +17,7 @@ class _CompatibilityScreenState extends ConsumerState<CompatibilityScreen> {
   DateTime _person1Date = DateTime(2000, 1, 1);
   DateTime _person2Date = DateTime(2000, 6, 15);
   double? _compatibilityScore;
+  Map<BiorhythmType, double>? _cycleScores;
 
   Color _scoreColor(double score) {
     if (score >= 80) return Colors.green;
@@ -34,14 +34,21 @@ class _CompatibilityScreenState extends ConsumerState<CompatibilityScreen> {
 
   void _calculate() {
     final diff = _person1Date.difference(_person2Date).inDays.abs();
-    final physicalSync = (cos((2 * pi * diff) / 23) + 1) / 2 * 100;
-    final emotionalSync = (cos((2 * pi * diff) / 28) + 1) / 2 * 100;
-    final intellectualSync = (cos((2 * pi * diff) / 33) + 1) / 2 * 100;
-    final intuitiveSync = (cos((2 * pi * diff) / 38) + 1) / 2 * 100;
-    final total = (physicalSync + emotionalSync + intellectualSync + intuitiveSync) / 4;
+    final scores = {
+      BiorhythmType.physical:
+          BiorhythmCalculator.compatibilitySync(BiorhythmType.physical, diff),
+      BiorhythmType.emotional:
+          BiorhythmCalculator.compatibilitySync(BiorhythmType.emotional, diff),
+      BiorhythmType.intellectual:
+          BiorhythmCalculator.compatibilitySync(BiorhythmType.intellectual, diff),
+      BiorhythmType.intuitive:
+          BiorhythmCalculator.compatibilitySync(BiorhythmType.intuitive, diff),
+    };
+    final total = scores.values.reduce((a, b) => a + b) / scores.length;
 
     setState(() {
       _compatibilityScore = total;
+      _cycleScores = scores;
     });
   }
 
@@ -142,62 +149,26 @@ class _CompatibilityScreenState extends ConsumerState<CompatibilityScreen> {
                     const SizedBox(height: 24),
                     _CompatibilityBar(
                       label: s.physical,
-                      value: (cos((_person1Date
-                                      .difference(_person2Date)
-                                      .inDays
-                                      .abs() as double) *
-                                  2 *
-                                  pi /
-                                  23) +
-                              1) /
-                          2 *
-                          100,
+                      value: _cycleScores![BiorhythmType.physical]!,
                       color: AppColors.colorForType(BiorhythmType.physical),
                     ),
                     const SizedBox(height: 8),
                     _CompatibilityBar(
                       label: s.emotional,
-                      value: (cos((_person1Date
-                                      .difference(_person2Date)
-                                      .inDays
-                                      .abs() as double) *
-                                  2 *
-                                  pi /
-                                  28) +
-                              1) /
-                          2 *
-                          100,
+                      value: _cycleScores![BiorhythmType.emotional]!,
                       color: AppColors.colorForType(BiorhythmType.emotional),
                     ),
                     const SizedBox(height: 8),
                     _CompatibilityBar(
                       label: s.intellectual,
-                      value: (cos((_person1Date
-                                      .difference(_person2Date)
-                                      .inDays
-                                      .abs() as double) *
-                                  2 *
-                                  pi /
-                                  33) +
-                              1) /
-                          2 *
-                          100,
+                      value: _cycleScores![BiorhythmType.intellectual]!,
                       color:
                           AppColors.colorForType(BiorhythmType.intellectual),
                     ),
                     const SizedBox(height: 8),
                     _CompatibilityBar(
                       label: s.intuitive,
-                      value: (cos((_person1Date
-                                      .difference(_person2Date)
-                                      .inDays
-                                      .abs() as double) *
-                                  2 *
-                                  pi /
-                                  38) +
-                              1) /
-                          2 *
-                          100,
+                      value: _cycleScores![BiorhythmType.intuitive]!,
                       color:
                           AppColors.colorForType(BiorhythmType.intuitive),
                     ),

@@ -14,8 +14,7 @@ class FemaleCycleData {
 
   bool isOvulationDayOn(DateTime targetDate) {
     final ovulationDay = cycleLength ~/ 2;
-    final daysSincePeriod =
-        targetDate.difference(lastPeriodStart).inDays % cycleLength;
+    final daysSincePeriod = _daysInCycle(targetDate);
     return daysSincePeriod == ovulationDay;
   }
 
@@ -23,22 +22,19 @@ class FemaleCycleData {
     final ovulationDay = cycleLength ~/ 2;
     final fertileStart = ovulationDay - 5;
     final fertileEnd = ovulationDay + 1;
-    final daysSincePeriod =
-        targetDate.difference(lastPeriodStart).inDays % cycleLength;
+    final daysSincePeriod = _daysInCycle(targetDate);
     return daysSincePeriod >= fertileStart && daysSincePeriod <= fertileEnd;
   }
 
   bool isMenstruatingOn(DateTime targetDate) {
-    final daysSincePeriod =
-        targetDate.difference(lastPeriodStart).inDays % cycleLength;
+    final daysSincePeriod = _daysInCycle(targetDate);
     return daysSincePeriod < periodLength;
   }
 
   double fertilityPercentOn(DateTime targetDate) {
     if (isMenstruatingOn(targetDate)) return 0.0;
     final ovulationDay = cycleLength ~/ 2;
-    final daysSincePeriod =
-        targetDate.difference(lastPeriodStart).inDays % cycleLength;
+    final daysSincePeriod = _daysInCycle(targetDate);
 
     final distanceFromOvulation = (daysSincePeriod - ovulationDay).abs();
     final maxDistance = max(ovulationDay, cycleLength - ovulationDay);
@@ -50,13 +46,20 @@ class FemaleCycleData {
     if (isMenstruatingOn(targetDate)) return s.cyclePhaseMenstrual;
     if (isFertileWindowOn(targetDate)) return s.cyclePhaseFertile;
     final ovulationDay = cycleLength ~/ 2;
-    final daysSincePeriod =
-        targetDate.difference(lastPeriodStart).inDays % cycleLength;
+    final daysSincePeriod = _daysInCycle(targetDate);
     if (daysSincePeriod < ovulationDay) return s.cyclePhaseFollicular;
     return s.cyclePhaseLuteal;
   }
 
   int dayInCycleOn(DateTime targetDate) {
-    return targetDate.difference(lastPeriodStart).inDays % cycleLength;
+    return _daysInCycle(targetDate);
+  }
+
+  /// Возвращает день в цикле [0; cycleLength) с защитой от отрицательного modulo.
+  /// Dart `%` возвращает отрицательное значение для отрицательных операндов,
+  /// поэтому используем `((days % N) + N) % N`.
+  int _daysInCycle(DateTime targetDate) {
+    final days = targetDate.difference(lastPeriodStart).inDays;
+    return ((days % cycleLength) + cycleLength) % cycleLength;
   }
 }

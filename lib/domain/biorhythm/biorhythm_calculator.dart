@@ -152,4 +152,14 @@ class BiorhythmCalculator {
     final t = typeTitle?.call(value.type) ?? value.type.title;
     return '$t: $sign$pct% ($phase)';
   }
+
+  /// Совместимость двух людей по одному циклу [type].
+  ///
+  /// Разница в днях между датами рождения [diffDays] определяет фазовый сдвиг
+  /// между двумя синусоидами. Формула: `(cos(2π·diff/period) + 1) / 2 * 100`.
+  /// Возвращает значение в диапазоне [0; 100], где 100 — идеальная синхронизация.
+  static double compatibilitySync(BiorhythmType type, int diffDays) {
+    final angle = 2 * pi * diffDays / type.period;
+    return (cos(angle) + 1) / 2 * 100;
+  }
 }

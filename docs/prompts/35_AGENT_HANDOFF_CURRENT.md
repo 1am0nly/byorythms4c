@@ -124,14 +124,27 @@ flutter build appbundle --release ✅ (27.1MB)
 | B7 | 🟠 High | `female_mode_screen.dart` L148 | Отрицательный ovulation countdown |
 | B8 | 🟡 Low | `year_overview_screen.dart` L175, `cycle_calendar.dart` L95 | Hardcoded Colors.green/red.shade — не theme-aware |
 
-### Приоритет фиксов
-1. **B1** — критический краш, фикс 1 строка: `as double` → `.toDouble()`
-2. **B5** — затрагивает ВСЕ методы cycle_data.dart, фикс: `((days % N) + N) % N`
-3. **B2, B3** — рефакторинг compatibility_screen.dart
-4. **B4, B6, B7** — мелкие логические фиксы
-5. **B8** — косметика
+## Баги — найдены 11.07.2026 (Code Review) — ВСЕ ИСПРАВЛЕНЫ ✅
+
+| # | Severity | File | Issue | Фикс |
+|---|----------|------|-------|------|
+| B1 | 🔴 Critical | `compatibility_screen.dart` | `int as double` → TypeError crash | ✅ `BiorhythmCalculator.compatibilitySync()` |
+| B2 | 🟠 High | `compatibility_screen.dart` | Дублированная математика | ✅ Вызов `BiorhythmCalculator.compatibilitySync()` |
+| B3 | 🟠 High | `compatibility_screen.dart` | State inconsistency score vs bars | ✅ `_cycleScores` Map в state |
+| B4 | 🟠 High | `year_overview_screen.dart` L38 | Calendar weekday alignment | ✅ `(firstDay.weekday - 1) % 7` |
+| B5 | 🟠 High | `cycle_data.dart` | Отрицательный modulo | ✅ `_daysInCycle()` helper |
+| B6 | 🟠 High | `cycle_calendar.dart` L68 | Today highlight never shows | ✅ Сравнение year+month+day |
+| B7 | 🟠 High | `female_mode_screen.dart` L148 | Отрицательный ovulation countdown | ✅ `((x % N) + N) % N` |
+| B8 | 🟡 Low | `year_overview_screen.dart` L175, `cycle_calendar.dart` L95 | Hardcoded Colors | ✅ `colorScheme.primary/error` |
+
+### Результат после фиксов
+```
+flutter analyze              ✅ 0 issues
+flutter test                 ✅ 19/19
+```
 
 ## План фиксов (очередность)
+- ✅ **HIGH:** B1-B8 (все баги из code review) — **ИСПРАВЛЕНЫ**
 - **MEDIUM:** #15-#31
 - **LOW:** #32-#42
 
@@ -157,5 +170,6 @@ flutter build appbundle --release ✅ (27.1MB)
 - [x] **Выполнен** — IAP product IDs (monthly_premium, yearly_premium) зафиксированы
 - [x] **Выполнен** — PurchaseProvider инвалидация (DeepSeek)
 - [x] **Выполнен** — Unit тесты для граничных значений и женского цикла (DeepSeek)
+- [x] **Выполнен** — **Фикс багов B1-B8** (11.07.2026)
 - [ ] **TODO** — AAB upload в Google Play Console
 - [ ] **TODO** — iOS developer account ($99/год)
