@@ -22,6 +22,10 @@ final premiumDaysRemainingProvider = Provider<int>((ref) {
 });
 
 class IsPremiumNotifier extends AsyncNotifier<bool> {
+  static const String _kMonthlyProductId = 'monthly_premium';
+  static const String _kYearlyProductId = 'yearly_premium';
+  static const Set<String> _kProductIds = {_kMonthlyProductId, _kYearlyProductId};
+
   StreamSubscription<List<PurchaseDetails>>? _subscription;
 
   @override
@@ -108,7 +112,7 @@ class IsPremiumNotifier extends AsyncNotifier<bool> {
       final expiry = DateTime.now().add(Duration(days: days));
       await dao.set('premiumExpiry', expiry.toIso8601String());
     }
-    state = AsyncData(value);
+    ref.invalidateSelf();
     ref.invalidate(premiumExpiryProvider);
   }
 
@@ -124,7 +128,7 @@ class IsPremiumNotifier extends AsyncNotifier<bool> {
     final newExpiry = base.add(Duration(days: days));
     await dao.set('premiumExpiry', newExpiry.toIso8601String());
     await dao.set('isPremium', 'true');
-    state = const AsyncData(true);
+    ref.invalidateSelf();
     ref.invalidate(premiumExpiryProvider);
   }
 
@@ -135,19 +139,17 @@ class IsPremiumNotifier extends AsyncNotifier<bool> {
       await iap.restorePurchases();
       // Wait for the purchase stream to deliver restored purchases
       await Future.delayed(const Duration(seconds: 2));
-      final dao = ref.read(settingsDaoProvider);
-      final val = await dao.get('isPremium');
-      state = AsyncData(val == 'true');
+      ref.invalidateSelf();
+      ref.invalidate(premiumExpiryProvider);
     } else {
-      final dao = ref.read(settingsDaoProvider);
-      final val = await dao.get('isPremium');
-      state = AsyncData(val == 'true');
+      ref.invalidateSelf();
+      ref.invalidate(premiumExpiryProvider);
     }
   }
 
   Future<bool> purchasePlan(String planType) async {
     final productId =
-        planType == 'yearly' ? 'yearly_premium' : 'monthly_premium';
+        planType == 'yearly' ? _kYearlyProductId : _kMonthlyProductId;
     final iap = InAppPurchase.instance;
     final bool available = await iap.isAvailable().catchError((_) => false);
     if (!available) {
@@ -156,10 +158,10 @@ class IsPremiumNotifier extends AsyncNotifier<bool> {
       }
       return false;
     }
-    final Set<String> ids = {productId};
-    final response = await iap.queryProductDetails(ids);
+    final response = await iap.queryProductDetails(_kProductIds);
     if (response.productDetails.isNotEmpty) {
-      final product = response.productDetails.first;
+      final product = response.productDetails
+          .firstWhere((p) => p.id == productId, orElse: () => response.productDetails.first);
       if (product.id != productId) {
         if (kDebugMode) {
           await _simulatePurchase(planType);

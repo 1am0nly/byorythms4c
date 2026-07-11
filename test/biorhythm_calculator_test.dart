@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:biorhythms_flutter/domain/biorhythm/biorhythm_calculator.dart';
 
@@ -199,6 +200,46 @@ void main() {
         targetDate: birthDate.add(const Duration(days: 5)),
       );
       expect(physNormal.physical.isCritical, false);
+    });
+    test('boundary: physical day 0 is 0% and critical', () {
+      final result = BiorhythmCalculator.calculate(
+        birthDate: birthDate,
+        targetDate: birthDate,
+      );
+      expect(result.physical.percent, closeTo(0, 0.01));
+      expect(result.physical.isCritical, true);
+    });
+    test('boundary: emotional day 14 is 0% and critical', () {
+      final result = BiorhythmCalculator.calculate(
+        birthDate: birthDate,
+        targetDate: birthDate.add(const Duration(days: 14)),
+      );
+      expect(result.emotional.percent, closeTo(0, 0.01));
+      expect(result.emotional.isCritical, true);
+    });
+    test('boundary: intellectual day 33 is 0% and critical', () {
+      final result = BiorhythmCalculator.calculate(
+        birthDate: birthDate,
+        targetDate: birthDate.add(const Duration(days: 33)),
+      );
+      expect(result.intellectual.percent, closeTo(0, 0.01));
+      expect(result.intellectual.isCritical, true);
+    });
+    test('boundary: intuitive day 38 is 0% and critical', () {
+      final result = BiorhythmCalculator.calculate(
+        birthDate: birthDate,
+        targetDate: birthDate.add(const Duration(days: 38)),
+      );
+      expect(result.intuitive.percent, closeTo(0, 0.01));
+      expect(result.intuitive.isCritical, true);
+    });
+    test('boundary: physical day 6 is near peak', () {
+      final result = BiorhythmCalculator.calculate(
+        birthDate: birthDate,
+        targetDate: birthDate.add(const Duration(days: 6)),
+      );
+      final expected = sin(2 * pi * 6 / 23) * 100;
+      expect(result.physical.percent, closeTo(expected, 0.01));
     });
 
     test('future dates work correctly', () {
