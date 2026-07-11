@@ -21,9 +21,58 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     final s = AppStrings.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final pricing = ref.watch(premiumPricingProvider);
+    final pricingAsync = ref.watch(premiumPricingProvider);
     final isDark = theme.brightness == Brightness.dark;
 
+    return pricingAsync.when(
+      data: (pricing) => _buildPaywall(context, s, theme, colorScheme, pricing, isDark),
+      loading: () => _buildLoadingScaffold(context, colorScheme, isDark),
+      error: (e, _) => _buildPaywall(
+          context,
+          s,
+          theme,
+          colorScheme,
+          const PremiumPricing(),
+          isDark,
+        ),
+    );
+  }
+
+  Widget _buildLoadingScaffold(BuildContext context, ColorScheme colorScheme, bool isDark) {
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: isDark
+                ? [
+                    const Color(0xFF1A1B2E),
+                    const Color(0xFF0E0F1A),
+                    const Color(0xFF07080E),
+                  ]
+                : [
+                    const Color(0xFFF0EFF6),
+                    const Color(0xFFFAFAFC),
+                    const Color(0xFFF5F5FA),
+                  ],
+          ),
+        ),
+        child: Center(
+          child: CircularProgressIndicator(color: colorScheme.primary),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaywall(
+    BuildContext context,
+    AppStringsLocale s,
+    ThemeData theme,
+    ColorScheme colorScheme,
+    PremiumPricing pricing,
+    bool isDark,
+  ) {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -201,8 +250,10 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        runSpacing: 8,
                         children: [
                           _LinkText(text: s.privacyLink),
                           Text(' · ', style: TextStyle(color: colorScheme.onSurfaceVariant)),
@@ -242,7 +293,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(AppStrings.of(context).purchaseError)),
         );
       }
     } finally {
@@ -368,51 +419,75 @@ class _PlanCard extends StatelessWidget {
   }
 }
 
-class _LinkText extends ConsumerWidget {
+class _LinkText extends ConsumerStatefulWidget {
   final String text;
 
   const _LinkText({required this.text});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_LinkText> createState() => _LinkTextState();
+}
+
+class _LinkTextState extends ConsumerState<_LinkText> {
+  bool _isRestoring = false;
+
+  Future<void> _restorePurchases() async {
+    setState(() => _isRestoring = true);
+    try {
+      final notifier = ref.read(isPremiumProvider.notifier);
+      await notifier.restorePurchases();
+      if (mounted) {
+        final isPremium = ref.read(isPremiumProvider).valueOrNull ?? false;
+        final s = AppStrings.of(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isPremium ? s.premiumActivated : s.noPurchasesFound,
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isRestoring = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final s = AppStrings.of(context);
-    final isRestore = text == s.restoreLink;
-    final isPrivacy = text == s.privacyLink;
-    final isTerms = text == s.termsLink;
+    final isRestore = widget.text == s.restoreLink;
+    final isPrivacy = widget.text == s.privacyLink;
+    final isTerms = widget.text == s.termsLink;
     return TextButton(
       onPressed: isRestore
-          ? () async {
-              final restored = ref.read(isPremiumProvider.notifier);
-              await restored.restorePurchases();
-              if (context.mounted) {
-                final isPremium = ref.read(isPremiumProvider).valueOrNull ?? false;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      isPremium
-                          ? AppStrings.of(context).premiumActivated
-                          : AppStrings.of(context).noPurchasesFound,
-                    ),
-                  ),
-                );
-              }
-            }
+          ? _isRestoring ? null : _restorePurchases
           : isPrivacy
               ? () => context.push('/legal/privacy')
               : isTerms
                   ? () => context.push('/legal/eula')
-                  : () {},
+                  : null,
       style: TextButton.styleFrom(
         padding: EdgeInsets.zero,
         minimumSize: Size.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
+      child: _isRestoring
+          ? SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            )
+          : Text(
+              widget.text,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
             ),
-      ),
     );
   }
 }

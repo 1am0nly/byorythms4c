@@ -103,6 +103,7 @@ class AppStringsEn {
   static const String termsLink = 'Terms of Use';
   static const String restoreLink = 'Restore';
   static const String premiumActivated = 'Premium activated!';
+  static const String purchaseError = 'Purchase error';
   static const String onboardingWelcomeTitle = 'Welcome!';
   static const String onboardingWelcomeBody = 'Discover the hidden rhythms of your body. The Biorhythms app helps you visualize physical, emotional, intellectual, and intuitive phases based on your birth date to better plan each day.';
   static const String onboardingCycleTitle = 'Sine Wave of Life';

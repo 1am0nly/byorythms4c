@@ -188,8 +188,8 @@ class IsPremiumNotifier extends AsyncNotifier<bool> {
   /// покупок через `_listenToPurchaseUpdated`.
   Future<void> _simulatePurchase(String planType) async {
     await Future.delayed(const Duration(seconds: 1));
-    final pricing = ref.read(premiumPricingProvider);
-    final days = planType == 'yearly' ? pricing.trialDays : 30;
+    // Demo mode: use fixed trial days since pricing is async
+    final days = planType == 'yearly' ? 3 : 30;
     await setPremium(true, days: days);
   }
 }
@@ -228,6 +228,40 @@ class PremiumPricing {
   });
 }
 
-final premiumPricingProvider = Provider<PremiumPricing>((ref) {
-  return const PremiumPricing();
+Future<PremiumPricing> _fetchPremiumPricing() async {
+  final iap = InAppPurchase.instance;
+  final bool available = await iap.isAvailable().catchError((_) => false);
+  if (!available) {
+    return const PremiumPricing();
+  }
+  try {
+    final response = await iap.queryProductDetails({'monthly_premium', 'yearly_premium'});
+    if (response.notFoundIDs.isNotEmpty) {
+      debugPrint('Products not found: ${response.notFoundIDs}');
+    }
+    String monthly = '249 ₽';
+    String yearly = '1 690 ₽';
+    for (final product in response.productDetails) {
+      if (product.id == 'monthly_premium') {
+        monthly = product.price;
+      } else if (product.id == 'yearly_premium') {
+        yearly = product.price;
+      }
+    }
+    // Calculate monthly equivalent from yearly price
+    int yearlyAmount = int.tryParse(yearly.replaceAll(RegExp(r'[^\d]'), '')) ?? 1690;
+    String monthlyPerMonth = '${(yearlyAmount / 12).round()} ₽/мес';
+    return PremiumPricing(
+      monthlyPrice: monthly,
+      yearlyPrice: yearly,
+      monthlyPerMonth: monthlyPerMonth,
+    );
+  } catch (e) {
+    debugPrint('Failed to fetch premium pricing: $e');
+    return const PremiumPricing();
+  }
+}
+
+final premiumPricingProvider = FutureProvider<PremiumPricing>((ref) async {
+  return await _fetchPremiumPricing();
 });

@@ -150,6 +150,7 @@ class AppStringsLocale {
   String get termsLink => _isEn ? 'Terms of Use' : 'Условия использования';
   String get restoreLink => _isEn ? 'Restore' : 'Восстановить';
   String get premiumActivated => _isEn ? 'Premium activated!' : 'Premium активирован!';
+  String get purchaseError => _isEn ? 'Purchase error' : 'Ошибка покупки';
   String get onboardingWelcomeTitle => _isEn ? 'Welcome!' : 'Добро пожаловать!';
   String get onboardingWelcomeBody => _isEn ? 'Discover the hidden rhythms of your body. The Biorhythms app helps you visualize physical, emotional, intellectual, and intuitive phases based on your birth date to better plan each day.' : 'Откройте для себя скрытые ритмы своего организма. Приложение «Биоритмы» поможет визуализировать физическую, эмоциональную, интеллектуальную и интуитивную фазы на основе даты рождения, чтобы лучше планировать каждый день.';
   String get onboardingCycleTitle => _isEn ? 'Sine Wave of Life' : 'Синусоида жизни';
