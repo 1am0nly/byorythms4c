@@ -33,8 +33,8 @@ OpenCode (главный, с инструментами)
 ## Текущее состояние проекта
 - **Путь:** `C:\Users\a1am3\biorhythms_flutter`
 - **Версия:** 1.0.0+1, debug APK собирается, release AAB 27.1MB
-- **63 Dart-файла**, **19 тестов**, **15+ маршрутов**
-- **Последний коммит:** `6f59168` — fix: resolve 8 bugs from code review (B1-B8)
+- **65 Dart-файлов**, **32 теста**, **15+ маршрутов**
+- **Последний коммит:** `3a899bc` — feat: add store metadata, configure IAP product IDs, and add unit tests
 
 ## Ключевые изменения (с момента 35→)
 
@@ -84,14 +84,14 @@ OpenCode (главный, с инструментами)
 ## Результаты последней проверки
 ```
 flutter analyze              ✅ 0 issues
-flutter test                 ✅ 19/19
+flutter test                 ✅ 32/32
 flutter build apk --debug    ✅ (установлен на DN2103)
 flutter build appbundle --release ✅ (27.1MB)
 ```
 
 ## GitHub
 - Репо: `https://github.com/1am0nly/byorythms4c`
-- `main` — v0.2.0 (запушен: `6f59168`)
+- `main` — v1.0.0 (запушен: `3a899bc`)
 - `gh-pages` — `privacy/index.html` (доступна: https://1am0nly.github.io/byorythms4c/privacy/index.html)
 - `origin/gh-pages` — существует на удалённом репозитории
 - Файлы для команды: `README.md`, `STATUS.md`
@@ -124,12 +124,9 @@ flutter build appbundle --release ✅ (27.1MB)
 | B8 | 🟡 Low | `year_overview_screen.dart` L175, `cycle_calendar.dart` L95 | Hardcoded Colors | ✅ `colorScheme.primary/error` |
 
 ### Результат после фиксов
-```
-flutter analyze              ✅ 0 issues
-flutter test                 ✅ 19/19
-```
+``` flutter analyze ✅ 0 issues flutter test ✅ 32/32 ```
 
-## План фиксов (очередность)
+## Планирование релиза v1.0.0 - [x] **Выполнен** — Store metadata (Google Play RU, App Store RU) - [x] **Выполнен** — Release notes v1.0.0 - [x] **Выполнен** — Screenshots specifications (6 скриншотов) - [x] **Выполнен** — IAP product IDs зафиксированы (`monthly_premium`, `yearly_premium`) - [x] **Выполнен** — PurchaseProvider рефакторинг (`ref.invalidateSelf()`) - [x] **Выполнен** — Unit тесты: граничные значения биоритмов - [x] **Выполнен** — Unit тесты: FemaleCycleData (8 тестов) ## План фиксов (очередность)
 - ✅ **HIGH:** B1-B8 (все баги из code review) — **ИСПРАВЛЕНЫ**
 - **MEDIUM:** #15-#31
 - **LOW:** #32-#42
