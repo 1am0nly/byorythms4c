@@ -54,20 +54,38 @@
 
 ## Текущий контекст (11.07.2026)
 - **Все HIGH баги #1-14 ИСПРАВЛЕНЫ** (Phase B, 10.07)
+- **Все баги B1-B8 из Code Review ИСПРАВЛЕНЫ** (11.07) — см. ниже
 - **Автопуш УДАЛЁН** — только ручная кнопка "Показать сводку сейчас"
 - **NotificationScheduler / notification_provider.dart / notification_time_screen.dart** — УДАЛЕНЫ
 - **Биометрия**: `FlutterFragmentActivity` — подтверждена работа на DN2103
 - **Female mode**: локализованные фазы (Follicular, Luteal добавлены в strings)
 - **Year overview**: theme-aware цвета (colorScheme.primary/error)
+- **Compatibility screen**: рефакторинг — математика вынесена в `BiorhythmCalculator.compatibilitySync()`, state через `_cycleScores` Map
+- **Cycle data**: исправлен negative modulo во всех 6 методах через `_daysInCycle()` helper
 - **Tests**: 19/19 проходят, `flutter analyze` — 0 issues
+- **Последний коммит**: `6f59168` — `fix: resolve 8 bugs from code review (B1-B8)`
+
+### Исправленные баги B1-B8
+| # | Severity | Фикс |
+|---|----------|------|
+| B1 | 🔴 Critical | `BiorhythmCalculator.compatibilitySync()` — `int` вместо `double` |
+| B2 | 🟠 High | Математика вынесена в `BiorhythmCalculator` |
+| B3 | 🟠 High | `_cycleScores` Map в state |
+| B4 | 🟠 High | `(firstDay.weekday - 1) % 7` |
+| B5 | 🟠 High | `_daysInCycle()` с `((d % N) + N) % N` |
+| B6 | 🟠 High | Сравнение year+month+day |
+| B7 | 🟠 High | `((x % N) + N) % N` |
+| B8 | 🟡 Low | `colorScheme.primary/error` |
 
 ---
 
 ## Next tasks для Claude
-1. **Architecture review** — before IAP integration
-2. **MEDIUM bugs #15-31** — triage & prioritize
+1. **MEDIUM bugs #15-31** — triage & prioritize (остались после B1-B8)
+2. **Architecture review** — before IAP integration
 3. **CI/CD design** — Codemagic / GitHub Actions для iOS/Android
 4. **Performance profiling** — chart rendering, DB queries
+5. **AAB upload** в Google Play Console
+6. **iOS developer account** ($99/год)
 
 ---
 

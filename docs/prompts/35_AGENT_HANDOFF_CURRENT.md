@@ -34,7 +34,7 @@ OpenCode (главный, с инструментами)
 - **Путь:** `C:\Users\a1am3\biorhythms_flutter`
 - **Версия:** 1.0.0+1, debug APK собирается, release AAB 27.1MB
 - **63 Dart-файла**, **19 тестов**, **15+ маршрутов**
-- **Последний коммит:** `d25c1a1` — локализация female cycle phase + year_overview theme colors
+- **Последний коммит:** `6f59168` — fix: resolve 8 bugs from code review (B1-B8)
 
 ## Ключевые изменения (с момента 35→)
 
@@ -91,7 +91,7 @@ flutter build appbundle --release ✅ (27.1MB)
 
 ## GitHub
 - Репо: `https://github.com/1am0nly/byorythms4c`
-- `main` — v0.2.0 (запушен: `d25c1a1`)
+- `main` — v0.2.0 (запушен: `6f59168`)
 - `gh-pages` — `privacy/index.html` (доступна: https://1am0nly.github.io/byorythms4c/privacy/index.html)
 - `origin/gh-pages` — существует на удалённом репозитории
 - Файлы для команды: `README.md`, `STATUS.md`
@@ -110,21 +110,7 @@ flutter build appbundle --release ✅ (27.1MB)
 ### MEDIUM (#15-31) — желательно до релиза
 ### LOW (#32-42) — опционально
 
-## Новые баги — найдены 11.07.2026 (Code Review)
-Эти баги НЕ ловятся `flutter analyze` и существующими тестами. Только ручной code review.
-
-| # | Severity | File | Issue |
-|---|----------|------|-------|
-| B1 | 🔴 Critical | `compatibility_screen.dart` L148,163,178,194 | `int as double` → TypeError crash при нажатии Calculate |
-| B2 | 🟠 High | `compatibility_screen.dart` | Дублированная математика: cos((2π×diff)/period) вместо BiorhythmCalculator |
-| B3 | 🟠 High | `compatibility_screen.dart` | State inconsistency: score хранится в state, bars пересчитываются на каждом build |
-| B4 | 🟠 High | `year_overview_screen.dart` L38 | `startWeekday = firstDay.weekday % 7` — Sunday=0 попадает в колонку Monday |
-| B5 | 🟠 High | `cycle_data.dart` L17,25,31,38,48,56 | Отрицательный modulo: `%` в Dart возвращает negative для negative операндов |
-| B6 | 🟠 High | `cycle_calendar.dart` L68 | `date == today` всегда false (today имеет time components) |
-| B7 | 🟠 High | `female_mode_screen.dart` L148 | Отрицательный ovulation countdown |
-| B8 | 🟡 Low | `year_overview_screen.dart` L175, `cycle_calendar.dart` L95 | Hardcoded Colors.green/red.shade — не theme-aware |
-
-## Баги — найдены 11.07.2026 (Code Review) — ВСЕ ИСПРАВЛЕНЫ ✅
+## Новые баги — найдены 11.07.2026 (Code Review) — ВСЕ ИСПРАВЛЕНЫ ✅
 
 | # | Severity | File | Issue | Фикс |
 |---|----------|------|-------|------|

@@ -14,7 +14,7 @@
 - `flutter_background_service`: удалён из зависимостей и AndroidManifest
 - **Иконка в настройках**: `AndroidManifest.xml android:label="Biorhythms"` (было `biorhythms_flutter`)
 - **iOS**: добавлен `NSFaceIDUsageDescription` в Info.plist
-- **Последний коммит**: `d25c1a1` — локализация female cycle phase strings + year_overview theme colors
+- **Последний коммит**: `6f59168` — fix: resolve 8 bugs from code review (B1-B8)
 
 ## Решение по уведомлениям (10.07.2026)
 - Ежедневные пуши — `periodicallyShow(RepeatInterval.daily)`, автопуш **отключён** (только ручная кнопка "Показать сводку сейчас"). `NotificationScheduler` и связанные провайдеры удалены.
@@ -160,7 +160,7 @@ flutter build appbundle --release ✅ (27.1MB)
 
 ## GitHub
 - Репо: `https://github.com/1am0nly/byorythms4c`
-- `main` — v0.2.0 (запушен: `d25c1a1`)
+- `main` — v0.2.0 (запушен: `6f59168`)
 - `gh-pages` — `privacy/index.html` (доступна: https://1am0nly.github.io/byorythms4c/privacy/index.html)
 - `origin/gh-pages` — существует на удалённом репозитории
 - Файлы для команды: `README.md`, `STATUS.md`
@@ -197,30 +197,19 @@ flutter analyze              ✅ 0 issues
 flutter test                 ✅ 19/19
 ```
 
-## Баги — найдены 11.07.2026 (Code Review) — НЕ ИСПРАВЛЕНЫ
 
-| # | Severity | File | Issue |
-|---|----------|------|-------|
-| B1 | 🔴 Critical | `compatibility_screen.dart` L148,163,178,194 | `int as double` → TypeError crash |
-| B2 | 🟠 High | `compatibility_screen.dart` | Дублированная математика (не BiorhythmCalculator) |
-| B3 | 🟠 High | `compatibility_screen.dart` | State inconsistency score vs bars |
-| B4 | 🟠 High | `year_overview_screen.dart` L38 | Calendar weekday alignment |
-| B5 | 🟠 High | `cycle_data.dart` L17,25,31,38,48,56 | Отрицательный modulo |
-| B6 | 🟠 High | `cycle_calendar.dart` L68 | Today highlight never shows |
-| B7 | 🟠 High | `female_mode_screen.dart` L148 | Отрицательный ovulation countdown |
-| B8 | 🟡 Low | `year_overview_screen.dart` L175, `cycle_calendar.dart` L95 | Hardcoded Colors |
-
-Все 8 багов — runtime/logic, не ловятся `flutter analyze` и тестами.
-
-## План фиксов (приоритет)
-1. **B1** — критический краш, фикс 1 строка: `as double` → `.toDouble()`
-2. **B5** — затрагивает ВСЕ методы cycle_data.dart, фикс: `((days % N) + N) % N`
-3. **B2, B3** — рефакторинг compatibility_screen.dart
-4. **B4, B6, B7** — мелкие логические фиксы
-5. **B8** — косметика
+## План фиксов (выполнено)
+- ✅ **B1** — критический краш: `BiorhythmCalculator.compatibilitySync()` принимает `int`
+- ✅ **B2** — дублированная математика: вызов `BiorhythmCalculator.compatibilitySync()`
+- ✅ **B3** — state inconsistency: `_cycleScores` Map в state
+- ✅ **B4** — calendar alignment: `(firstDay.weekday - 1) % 7`
+- ✅ **B5** — отрицательный modulo: `_daysInCycle()` helper
+- ✅ **B6** — today highlight: сравнение year+month+day
+- ✅ **B7** — отрицательный countdown: `((x % N) + N) % N`
+- ✅ **B8** — hardcoded colors: `colorScheme.primary/error`
 
 ## План следующих шагов
-- [ ] **Фикс багов B1-B8** (приоритет выше всего)
+- [x] **Фикс багов B1-B8** (11.07.2026)
 - [ ] IAP продукты (monthly_premium, yearly_premium) в Google Play Console
 - [ ] AAB upload в Google Play Console (Internal Testing)
 - [ ] iOS developer account ($99/год) + TestFlight
