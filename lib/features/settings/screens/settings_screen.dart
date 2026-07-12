@@ -217,11 +217,9 @@ class SettingsScreen extends ConsumerWidget {
                     title: s.notificationTitle,
                     body: body,
                   );
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(s.notificationSentSnack)),
-                    );
-                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(s.notificationSentSnack)),
+                  );
                 },
               ),
             ],

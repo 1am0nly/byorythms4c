@@ -15,8 +15,8 @@ class HasSeenOnboardingNotifier extends AsyncNotifier<bool> {
   }
 
   Future<void> complete() async {
-    state = const AsyncData(true);
     final dao = ref.read(settingsDaoProvider);
     await dao.set('hasSeenOnboarding', 'true');
+    ref.invalidateSelf();
   }
 }

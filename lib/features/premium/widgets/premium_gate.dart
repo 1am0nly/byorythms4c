@@ -42,13 +42,13 @@ class PremiumGate extends ConsumerWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.lock_open,
-                              color: Colors.white, size: 18),
+                          Icon(Icons.lock_open,
+                              color: Theme.of(context).colorScheme.onPrimary, size: 18),
                           const SizedBox(width: 8),
                           Text(
                             'Premium: $feature',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),

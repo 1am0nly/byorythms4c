@@ -68,10 +68,9 @@ class PremiumPricingCache {
   }
 }
 
-final premiumPricingCacheProvider = Provider<PremiumPricingCache>((ref) {
+final premiumPricingCacheProvider = FutureProvider<PremiumPricingCache>((ref) async {
   final cache = PremiumPricingCache();
-  // Инициализация асинхронная, но не блокируем build
-  cache.init();
+  await cache.init();
   return cache;
 });
 
@@ -241,6 +240,7 @@ class IsPremiumNotifier extends AsyncNotifier<bool> {
   /// `_realPurchaseDurationDays`, которая используется для настоящих
   /// покупок через `_listenToPurchaseUpdated`.
   Future<void> _simulatePurchase(String planType) async {
+    assert(kDebugMode, '_simulatePurchase must only run in debug mode');
     await Future.delayed(const Duration(seconds: 1));
     // Demo mode: use fixed trial days since pricing is async
     final days = planType == 'yearly' ? 3 : 30;
@@ -302,7 +302,7 @@ class PremiumPricing {
 
 Future<PremiumPricing> _fetchPremiumPricing(Ref ref) async {
   // Check cache first
-  final cache = ref.read(premiumPricingCacheProvider);
+  final cache = await ref.watch(premiumPricingCacheProvider.future);
   final cached = cache.get();
   if (cached != null) {
     return cached;

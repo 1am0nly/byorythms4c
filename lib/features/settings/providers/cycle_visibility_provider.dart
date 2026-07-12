@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:biorhythms_flutter/data/database/providers.dart';
 import 'package:biorhythms_flutter/domain/biorhythm/biorhythm_calculator.dart';
@@ -29,7 +30,8 @@ class EnabledCyclesNotifier extends AsyncNotifier<Set<BiorhythmType>> {
         if (match.isNotEmpty) types.add(match.first);
       }
       return types.isEmpty ? BiorhythmType.values.toSet() : types;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Failed to parse enabledCycles JSON: $e');
       return BiorhythmType.values.toSet();
     }
   }
@@ -51,6 +53,9 @@ class EnabledCyclesNotifier extends AsyncNotifier<Set<BiorhythmType>> {
     } else {
       updated.add(type);
     }
-    await setEnabled(updated);
+    final dao = ref.read(settingsDaoProvider);
+    final encoded = jsonEncode(updated.map((t) => t.name).toList());
+    state = AsyncData(updated);
+    await dao.set(_key, encoded);
   }
 }

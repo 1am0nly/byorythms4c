@@ -52,7 +52,7 @@ class ProfileManagementScreen extends ConsumerWidget {
                               Navigator.of(ctx).pop(true);
                             },
                             style: FilledButton.styleFrom(
-                              backgroundColor: Colors.red,
+                              backgroundColor: Theme.of(ctx).colorScheme.error,
                             ),
                             child: Text(s.delete),
                           ),
@@ -61,10 +61,10 @@ class ProfileManagementScreen extends ConsumerWidget {
                     ) ?? false;
                   },
                   background: Container(
-                    color: Colors.red,
+                    color: Theme.of(context).colorScheme.error,
                     alignment: Alignment.centerRight,
                     padding: const EdgeInsets.only(right: 16),
-                    child: const Icon(Icons.delete, color: Colors.white),
+                    child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
                   ),
                   child: ListTile(
                     leading: CircleAvatar(
@@ -204,7 +204,7 @@ class ProfileManagementScreen extends ConsumerWidget {
                     await ref.read(avatarProvider('p_$newId').notifier).setAvatar(selectedEmoji);
                   }
                 }
-                if (ctx.mounted) Navigator.of(ctx).pop();
+                Navigator.of(ctx).pop();
               },
               child: Text(s.save),
             ),
