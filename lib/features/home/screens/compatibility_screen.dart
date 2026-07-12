@@ -20,9 +20,9 @@ class _CompatibilityScreenState extends ConsumerState<CompatibilityScreen> {
   Map<BiorhythmType, double>? _cycleScores;
 
   Color _scoreColor(double score) {
-    if (score >= 80) return Colors.green;
-    if (score >= 60) return Colors.orange;
-    return Colors.red;
+    if (score >= 80) return AppColors.compatibilityExcellent;
+    if (score >= 60) return AppColors.compatibilityGood;
+    return AppColors.compatibilityLow;
   }
 
   String _scoreLabel(double score, AppStringsLocale s) {

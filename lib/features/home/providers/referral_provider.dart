@@ -52,6 +52,7 @@ class ReferralService {
 
   static String buildShareText(String code, {String Function(String)? localize}) {
     if (localize != null) return localize(code);
+    // Fallback (ru) — в норме вызывающий код передаёт localize через AppStrings.
     return 'Следи за своими биоритмами вместе со мной! '
         'Приложение «Биоритмы» — твой ежедневный трекер энергии, '
         'эмоций, интеллекта и интуиции. '
@@ -59,10 +60,7 @@ class ReferralService {
         'https://biorhythms.app/invite/$code';
   }
 
-  static Future<void> share(String code, {String? subject, String? text}) async {
-    await Share.share(
-      text ?? buildShareText(code),
-      subject: subject ?? 'Приложение Биоритмы',
-    );
+  static Future<void> share(String code, {required String subject, required String text}) async {
+    await Share.share(text, subject: subject);
   }
 }

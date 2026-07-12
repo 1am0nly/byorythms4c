@@ -98,13 +98,13 @@ class _MonthGrid extends StatelessWidget {
       children: [
           Row(
             children: [
-              Expanded(child: Center(child: Text(strings.mon, style: const TextStyle(fontSize: 9, color: Colors.grey)))),
-              Expanded(child: Center(child: Text(strings.tue, style: const TextStyle(fontSize: 9, color: Colors.grey)))),
-              Expanded(child: Center(child: Text(strings.wed, style: const TextStyle(fontSize: 9, color: Colors.grey)))),
-              Expanded(child: Center(child: Text(strings.thu, style: const TextStyle(fontSize: 9, color: Colors.grey)))),
-              Expanded(child: Center(child: Text(strings.fri, style: const TextStyle(fontSize: 9, color: Colors.grey)))),
-              Expanded(child: Center(child: Text(strings.sat, style: const TextStyle(fontSize: 9, color: Colors.grey)))),
-              Expanded(child: Center(child: Text(strings.sun, style: const TextStyle(fontSize: 9, color: Colors.grey)))),
+              Expanded(child: Center(child: Text(strings.mon, style: TextStyle(fontSize: 9, color: colorScheme.onSurfaceVariant)))),
+              Expanded(child: Center(child: Text(strings.tue, style: TextStyle(fontSize: 9, color: colorScheme.onSurfaceVariant)))),
+              Expanded(child: Center(child: Text(strings.wed, style: TextStyle(fontSize: 9, color: colorScheme.onSurfaceVariant)))),
+              Expanded(child: Center(child: Text(strings.thu, style: TextStyle(fontSize: 9, color: colorScheme.onSurfaceVariant)))),
+              Expanded(child: Center(child: Text(strings.fri, style: TextStyle(fontSize: 9, color: colorScheme.onSurfaceVariant)))),
+              Expanded(child: Center(child: Text(strings.sat, style: TextStyle(fontSize: 9, color: colorScheme.onSurfaceVariant)))),
+              Expanded(child: Center(child: Text(strings.sun, style: TextStyle(fontSize: 9, color: colorScheme.onSurfaceVariant)))),
             ],
         ),
         const SizedBox(height: 2),

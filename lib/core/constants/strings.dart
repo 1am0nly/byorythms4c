@@ -77,6 +77,9 @@ class AppStringsLocale {
   String get inviteFriend => _isEn ? 'Invite a Friend' : 'Пригласить друга';
   String get yourReferralCode => _isEn ? 'Your Referral Code' : 'Ваш реферальный код';
   String get share => _isEn ? 'Share' : 'Поделиться';
+  String referralShareText(String code) => _isEn
+      ? 'Join me on Biorhythms! Use my referral code $code to get a bonus.'
+      : 'Присоединяйся к Биоритмам! Использу/1000\nИспользуй мой реферальный код $code и получи бонус.';
   String get friendsInvited => _isEn ? 'Friends Invited' : 'Приглашено друзей';
   String get premiumDaysEarned => _isEn ? '{count} days of Premium earned' : '{count} дней Premium заработано';
   String get todaySummary => _isEn ? 'Today' : 'Сегодня';

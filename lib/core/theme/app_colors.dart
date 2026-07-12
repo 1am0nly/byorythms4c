@@ -63,4 +63,16 @@ class AppColors {
   static Color colorForValueWithOpacity(BiorhythmValue value, double opacity) {
     return colorForValue(value).withOpacity(opacity);
   }
+
+  // Семантические цвета для шкал совместимости и фаз цикла.
+  // Используются вместо хардкодных Colors.green/orange/red для поддержки
+  // тёмной темы и согласованности с Material 3 ColorScheme.
+  static const Color compatibilityExcellent = Color(0xFF4CAF50); // зелёный
+  static const Color compatibilityGood = Color(0xFFFFA726); // оранжевый
+  static const Color compatibilityLow = Color(0xFFEF5350); // красный
+
+  // Фазы менструального цикла
+  static const Color cyclePhaseMenstrual = Color(0xFFEF5350); // красный
+  static const Color cyclePhaseFertile = Color(0xFFFFA726); // оранжевый
+  static const Color cyclePhaseOvulation = Color(0xFF66BB6A); // зелёный
 }

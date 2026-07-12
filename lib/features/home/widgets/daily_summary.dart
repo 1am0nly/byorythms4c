@@ -70,6 +70,7 @@ class _BiorhythmBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sign = value >= 0 ? '+' : '';
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -82,14 +83,14 @@ class _BiorhythmBadge extends StatelessWidget {
           decoration: BoxDecoration(
             color: color.withOpacity(0.15),
             borderRadius: BorderRadius.circular(12),
-            border: isCritical ? Border.all(color: Colors.red, width: 1) : null,
+            border: isCritical ? Border.all(color: colorScheme.error, width: 1) : null,
           ),
           child: Text(
             '$sign$value%',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: isCritical ? Colors.red : color,
+              color: isCritical ? colorScheme.error : color,
             ),
           ),
         ),

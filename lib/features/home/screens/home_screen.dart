@@ -100,6 +100,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           lastDate: DateTime.now().add(const Duration(days: 365)),
                           locale: Localizations.localeOf(context),
                         );
+                        if (!mounted) return;
                         if (picked != null) {
                           ref.read(focusDateProvider.notifier).state = picked;
                         }

@@ -61,7 +61,7 @@ class AboutScreen extends StatelessWidget {
                 icon: const Icon(Icons.mail_outline),
                 label: Text(s.aboutContact),
                 onPressed: () => launchUrl(
-                  Uri.parse('mailto:ant.ignasev@gmail.com?subject=Biorhythms%20Feedback'),
+                  Uri.parse('mailto:${AppStrings.developerEmail}?subject=Biorhythms%20Feedback'),
                 ),
               ),
             ),

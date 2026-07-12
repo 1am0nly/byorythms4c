@@ -204,7 +204,7 @@ class ProfileManagementScreen extends ConsumerWidget {
                     await ref.read(avatarProvider('p_$newId').notifier).setAvatar(selectedEmoji);
                   }
                 }
-                Navigator.of(ctx).pop();
+                if (context.mounted) Navigator.of(context).pop();
               },
               child: Text(s.save),
             ),

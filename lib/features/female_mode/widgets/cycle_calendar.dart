@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:biorhythms_flutter/core/constants/strings.dart';
+import 'package:biorhythms_flutter/core/theme/app_colors.dart';
 import 'package:biorhythms_flutter/features/female_mode/models/cycle_data.dart';
 
 class CycleCalendar extends StatelessWidget {
@@ -50,8 +51,9 @@ class CycleCalendar extends StatelessWidget {
                 }
                 final day = index - startOfMonth.weekday + 2;
                 final date = DateTime(today.year, today.month, day);
-                final daysSinceLastPeriod =
-                    date.difference(cycleData.lastPeriodStart).inHours ~/ 24;
+                final daysSinceLastPeriod = DateUtils.dateOnly(date)
+                    .difference(DateUtils.dateOnly(cycleData.lastPeriodStart))
+                    .inDays;
                 final cycleDay =
                     ((daysSinceLastPeriod % daysInCycle) + daysInCycle) %
                         daysInCycle;
@@ -70,11 +72,11 @@ class CycleCalendar extends StatelessWidget {
 
                 Color? bgColor;
                 if (isMenstruating) {
-                  bgColor = Colors.red.withOpacity(0.3);
+                  bgColor = AppColors.cyclePhaseMenstrual.withOpacity(0.3);
                 } else if (isOvulationDay) {
-                  bgColor = Colors.green.withOpacity(0.4);
+                  bgColor = AppColors.cyclePhaseOvulation.withOpacity(0.4);
                 } else if (isFertile) {
-                  bgColor = Colors.orange.withOpacity(0.2);
+                  bgColor = AppColors.cyclePhaseFertile.withOpacity(0.2);
                 }
 
                 return Container(
@@ -108,12 +110,14 @@ class CycleCalendar extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _LegendItem(
-                    color: Colors.red.withOpacity(0.3), label: s.cyclePhaseMenstrual),
+                    color: AppColors.cyclePhaseMenstrual.withOpacity(0.3),
+                    label: s.cyclePhaseMenstrual),
                 _LegendItem(
-                    color: Colors.orange.withOpacity(0.2),
+                    color: AppColors.cyclePhaseFertile.withOpacity(0.2),
                     label: s.cyclePhaseFertile),
                 _LegendItem(
-                    color: Colors.green.withOpacity(0.4), label: s.cyclePhaseOvulation),
+                    color: AppColors.cyclePhaseOvulation.withOpacity(0.4),
+                    label: s.cyclePhaseOvulation),
               ],
             ),
           ],

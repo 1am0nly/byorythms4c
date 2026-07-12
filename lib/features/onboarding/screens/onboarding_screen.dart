@@ -143,78 +143,82 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  void _showAddProfileDialog(AppStringsLocale s) {
+  void _showAddProfileDialog(AppStringsLocale s) async {
     final nameController = TextEditingController();
     DateTime selectedDate = DateTime(2000, 1, 1);
 
-    showDialog(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setState) => AlertDialog(
-          title: Text(s.addProfileDialog),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: s.name,
-                  border: const OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              InkWell(
-                onTap: () async {
-                  final date = await showDatePicker(
-                    context: ctx,
-                    initialDate: selectedDate,
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime.now(),
-                    locale: Localizations.localeOf(ctx),
-                  );
-                  if (date != null) {
-                    setState(() => selectedDate = date);
-                  }
-                },
-                child: InputDecorator(
+    try {
+      await showDialog(
+        context: context,
+        builder: (ctx) => StatefulBuilder(
+          builder: (ctx, setState) => AlertDialog(
+            title: Text(s.addProfileDialog),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
                   decoration: InputDecoration(
-                    labelText: s.birthDate,
+                    labelText: s.name,
                     border: const OutlineInputBorder(),
                   ),
-                    child: Text(
-                      DateFormat('d MMMM yyyy', Localizations.localeOf(ctx).languageCode).format(selectedDate),
+                ),
+                const SizedBox(height: 16),
+                InkWell(
+                  onTap: () async {
+                    final date = await showDatePicker(
+                      context: ctx,
+                      initialDate: selectedDate,
+                      firstDate: DateTime(1900),
+                      lastDate: DateTime.now(),
+                      locale: Localizations.localeOf(ctx),
+                    );
+                    if (date != null) {
+                      setState(() => selectedDate = date);
+                    }
+                  },
+                  child: InputDecorator(
+                    decoration: InputDecoration(
+                      labelText: s.birthDate,
+                      border: const OutlineInputBorder(),
+                    ),
+                      child: Text(
+                        DateFormat('d MMMM yyyy', Localizations.localeOf(ctx).languageCode).format(selectedDate),
+                    ),
                   ),
                 ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  _finishOnboarding();
+                },
+                child: Text(s.skip),
+              ),
+              FilledButton(
+                onPressed: () {
+                  if (nameController.text.trim().isEmpty) return;
+                  ref.read(personRepositoryProvider).add(
+                    Person(
+                      id: '',
+                      name: nameController.text.trim(),
+                      birthDate: selectedDate,
+                    ),
+                  );
+                  Navigator.of(ctx).pop();
+                  _finishOnboarding();
+                },
+                child: Text(s.save),
               ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(ctx).pop();
-                _finishOnboarding();
-              },
-              child: Text(s.skip),
-            ),
-            FilledButton(
-              onPressed: () {
-                if (nameController.text.trim().isEmpty) return;
-                ref.read(personRepositoryProvider).add(
-                  Person(
-                    id: '',
-                    name: nameController.text.trim(),
-                    birthDate: selectedDate,
-                  ),
-                );
-                Navigator.of(ctx).pop();
-                _finishOnboarding();
-              },
-              child: Text(s.save),
-            ),
-          ],
         ),
-      ),
-    );
+      );
+    } finally {
+      nameController.dispose();
+    }
   }
 
   void _finishOnboarding() {

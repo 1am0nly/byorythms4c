@@ -30,7 +30,7 @@ class FeedbackScreen extends StatelessWidget {
                 icon: const Icon(Icons.mail_outline),
                 label: Text(s.feedbackButton),
                 onPressed: () => launchUrl(
-                  Uri.parse('mailto:ant.ignasev@gmail.com?subject=Biorhythms%20Feedback'),
+                  Uri.parse('mailto:${AppStrings.developerEmail}?subject=Biorhythms%20Feedback'),
                 ),
               ),
             ),

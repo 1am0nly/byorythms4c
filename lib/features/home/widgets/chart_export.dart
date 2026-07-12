@@ -20,8 +20,7 @@ class ChartExporter {
   static Future<void> shareAsPng(
     GlobalKey repaintKey, {
     double pixelRatio = 3.0,
-    String? subject,
-    String fallbackSubject = 'Мои биоритмы',
+    required String subject,
   }) async {
     final bytes = await captureWidget(repaintKey, pixelRatio);
     if (bytes == null) return;
@@ -33,11 +32,11 @@ class ChartExporter {
 
     await Share.shareXFiles(
       [XFile(file.path)],
-      subject: subject ?? fallbackSubject,
+      subject: subject,
     );
   }
 
-  static Future<void> shareAsText(String text, {String subject = 'Мои биоритмы'}) async {
+  static Future<void> shareAsText(String text, {required String subject}) async {
     await Share.share(text, subject: subject);
   }
 }

@@ -109,7 +109,7 @@ class _StatRow extends StatelessWidget {
               phase,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: value.isCritical
-                        ? Colors.red
+                        ? Theme.of(context).colorScheme.error
                         : Theme.of(context).colorScheme.onSurfaceVariant,
                     fontWeight: value.isCritical ? FontWeight.bold : null,
                   ),

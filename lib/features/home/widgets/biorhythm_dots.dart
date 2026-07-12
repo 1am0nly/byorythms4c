@@ -17,14 +17,9 @@ class BiorhythmDots extends ConsumerWidget {
     final snapshot = ref.watch(selectedSnapshotProvider);
     final enabledCycles = ref.watch(enabledCyclesProvider).valueOrNull ?? BiorhythmType.values.toSet();
 
-    // ВНИМАНИЕ: это точечный фикс уменьшенных отступов, который снижает
-    // риск переполнения на маленьких экранах, но не устраняет его
-    // полностью на всех размерах экрана. Настоящая причина overflow —
-    // скорее всего, недостаточно места в родительском Column на
-    // home_screen.dart после того, как список вырос с 3 до 4 строк
-    // (добавление интуитивного цикла). Если overflow повторится — нужно
-    // обернуть содержимое home_screen.dart в SingleChildScrollView,
-    // а не продолжать уменьшать отступы здесь.
+    // Родительский Column в home_screen.dart уже обёрнут в SingleChildScrollView,
+    // поэтому вертикальное переполнение невозможно. Горизонтальное переполнение
+    // невозможно — каждый _DotItem использует Expanded-эквивалент (Spacer).
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
       child: Column(
