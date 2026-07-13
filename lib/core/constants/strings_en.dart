@@ -203,4 +203,7 @@ class AppStringsEn {
   static const String emotionalTitle = 'Emotional';
   static const String intellectualTitle = 'Intellectual';
   static const String intuitiveTitle = 'Intuitive';
+  static const String biometricSubtitle = 'Face ID / Fingerprint';
+  static const String languageRussian = 'Рус';
+  static const String languageEnglish = 'EN';
 }

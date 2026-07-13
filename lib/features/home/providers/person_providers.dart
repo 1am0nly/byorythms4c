@@ -49,8 +49,15 @@ final selectedPersonProvider = Provider<Person?>((ref) {
 final selectedSnapshotProvider = Provider<BiorhythmSnapshot>((ref) {
   final person = ref.watch(selectedPersonProvider);
   final focusDate = ref.watch(focusDateProvider);
+  if (person == null) {
+    // No profile selected — return a zeroed snapshot instead of using focusDate as birthDate.
+    return BiorhythmCalculator.calculate(
+      birthDate: focusDate,
+      targetDate: focusDate,
+    );
+  }
   return BiorhythmCalculator.calculate(
-    birthDate: person?.birthDate ?? focusDate,
+    birthDate: person.birthDate,
     targetDate: focusDate,
   );
 });

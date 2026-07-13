@@ -25,7 +25,7 @@ class AppTheme {
         cardTheme: CardTheme(
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          color: Colors.white.withOpacity(0.65),
+          color: AppColors.lightBackground.withOpacity(0.65),
           surfaceTintColor: Colors.transparent,
         ),
         appBarTheme: const AppBarTheme(
@@ -35,7 +35,7 @@ class AppTheme {
         ),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           elevation: 0,
-          backgroundColor: Colors.white.withOpacity(0.7),
+          backgroundColor: AppColors.lightBackground.withOpacity(0.7),
           selectedItemColor: AppColors.physicalDark,
           unselectedItemColor: Colors.grey,
         ),
@@ -61,7 +61,7 @@ class AppTheme {
         cardTheme: CardTheme(
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          color: Colors.white.withOpacity(0.08),
+          color: AppColors.darkBackground.withOpacity(0.08),
           surfaceTintColor: Colors.transparent,
         ),
         appBarTheme: const AppBarTheme(

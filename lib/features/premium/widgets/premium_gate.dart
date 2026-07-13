@@ -25,7 +25,7 @@ class PremiumGate extends ConsumerWidget {
           child: GestureDetector(
             onTap: () => context.push('/paywall'),
             child: Container(
-              color: Colors.black.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

@@ -362,11 +362,11 @@ class _PlanCard extends StatelessWidget {
           color: isSelected
               ? colorScheme.primary.withOpacity(0.15)
               : (theme.brightness == Brightness.dark
-                  ? Colors.white.withOpacity(0.06)
-                  : Colors.white.withOpacity(0.5)),
+                  ? colorScheme.surface.withOpacity(0.06)
+                  : colorScheme.surface.withOpacity(0.5)),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: isSelected ? colorScheme.primary.withOpacity(0.6) : Colors.white.withOpacity(0.15),
+            color: isSelected ? colorScheme.primary.withOpacity(0.6) : colorScheme.surface.withOpacity(0.15),
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -394,8 +394,8 @@ class _PlanCard extends StatelessWidget {
                 ),
                 child: Text(
                   badge!,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: colorScheme.onSurface,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,

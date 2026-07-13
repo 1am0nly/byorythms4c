@@ -28,13 +28,12 @@ class GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final effectiveTint = tintColor ??
-        (isDark ? Colors.white.withOpacity(0.08) : Colors.white.withOpacity(0.6));
-    final effectiveBorder = borderColor ??
-        (isDark ? Colors.white.withOpacity(0.12) : Colors.white.withOpacity(0.5));
+    final cs = Theme.of(context).colorScheme;
+    final effectiveTint = tintColor ?? (isDark ? cs.surface.withOpacity(0.08) : cs.surface.withOpacity(0.6));
+    final effectiveBorder = borderColor ?? (isDark ? cs.surface.withOpacity(0.12) : cs.surface.withOpacity(0.5));
     final effectiveShadow = boxShadow ?? [
       BoxShadow(
-        color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.08),
+        color: isDark ? cs.shadow.withOpacity(0.3) : cs.shadow.withOpacity(0.08),
         blurRadius: 20,
         offset: const Offset(0, 4),
       ),

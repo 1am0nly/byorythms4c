@@ -37,7 +37,12 @@ class PersonDao extends DatabaseAccessor<AppDatabase> with _$PersonDaoMixin {
     return (delete(persons)..where((t) => t.id.equals(intId))).go();
   }
 
-  int _parseId(String id) => int.parse(id.replaceFirst('p_', ''));
+  int _parseId(String id) {
+    if (!id.startsWith('p_')) {
+      throw ArgumentError('Invalid person id format: "$id" (expected prefix "p_")');
+    }
+    return int.parse(id.replaceFirst('p_', ''));
+  }
 
   Person _toDomain(PersonRow row) {
     return Person(

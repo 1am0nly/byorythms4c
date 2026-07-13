@@ -47,9 +47,9 @@ class ProfileManagementScreen extends ConsumerWidget {
                             child: Text(s.cancel),
                           ),
                           FilledButton(
-                            onPressed: () {
-                              ref.read(personRepositoryProvider).delete(person.id);
-                              Navigator.of(ctx).pop(true);
+                            onPressed: () async {
+                              await ref.read(personRepositoryProvider).delete(person.id);
+                              if (ctx.mounted) Navigator.of(ctx).pop(true);
                             },
                             style: FilledButton.styleFrom(
                               backgroundColor: Theme.of(ctx).colorScheme.error,
@@ -68,7 +68,7 @@ class ProfileManagementScreen extends ConsumerWidget {
                   ),
                   child: ListTile(
                     leading: CircleAvatar(
-                      child: Text(avatar ?? person.name[0].toUpperCase()),
+                      child: Text(person.name.isEmpty ? '' : (avatar ?? person.name[0].toUpperCase())),
                     ),
                     title: Text(person.name),
                     subtitle: Text(
@@ -183,7 +183,7 @@ class ProfileManagementScreen extends ConsumerWidget {
               onPressed: () async {
                 if (nameController.text.trim().isEmpty) return;
                 if (existing != null) {
-                  ref.read(personRepositoryProvider).update(
+                  await ref.read(personRepositoryProvider).update(
                     existing.copyWith(
                       name: nameController.text.trim(),
                       birthDate: selectedDate,

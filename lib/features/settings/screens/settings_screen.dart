@@ -116,7 +116,7 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   child: Text(
                     s.tryLabel,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13),
+                    style: TextStyle(color: colorScheme.onSurface, fontWeight: FontWeight.w600, fontSize: 13),
                   ),
                 ),
                 onTap: () => context.push('/paywall'),
@@ -310,9 +310,9 @@ class SettingsScreen extends ConsumerWidget {
                 leading: const Icon(Icons.language),
                 title: Text(s.languageLabel),
                 trailing: SegmentedButton<String>(
-                  segments: const [
-                    ButtonSegment(value: 'ru', label: Text('Рус')),
-                    ButtonSegment(value: 'en', label: Text('EN')),
+                  segments: [
+                    ButtonSegment(value: 'ru', label: Text(s.languageRussian)),
+                    ButtonSegment(value: 'en', label: Text(s.languageEnglish)),
                   ],
                   selected: {currentLocale.languageCode},
                   onSelectionChanged: (set) {

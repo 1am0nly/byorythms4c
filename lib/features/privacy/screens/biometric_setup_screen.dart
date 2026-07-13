@@ -60,7 +60,7 @@ class BiometricSetupScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(16),
                     child: Row(
                       children: [
-                        const Icon(Icons.info_outline, color: Colors.orange),
+                        Icon(Icons.info_outline, color: Theme.of(context).colorScheme.tertiary),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
@@ -75,7 +75,7 @@ class BiometricSetupScreen extends ConsumerWidget {
               }
               return SwitchListTile(
                 title: Text(s.biometricProtection),
-                subtitle: const Text('Face ID / Fingerprint'),
+                subtitle: Text(s.biometricSubtitle),
                 value: biometricEnabled,
                 onChanged: (value) async {
                   if (value) {

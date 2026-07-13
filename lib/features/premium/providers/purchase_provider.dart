@@ -191,13 +191,19 @@ class IsPremiumNotifier extends AsyncNotifier<bool> {
     if (available) {
       await iap.restorePurchases();
       // Wait for the purchase stream to deliver restored purchases
-      await Future.delayed(const Duration(seconds: 2));
-      ref.invalidateSelf();
-      ref.invalidate(premiumExpiryProvider);
-    } else {
-      ref.invalidateSelf();
-      ref.invalidate(premiumExpiryProvider);
+      // instead of a blind timer — _listenToPurchaseUpdated handles
+      // PurchaseStatus.restored and calls setPremium which invalidates.
+      await iap.purchaseStream
+          .firstWhere(
+            (purchases) => purchases.any(
+              (p) => p.status == PurchaseStatus.restored || p.status == PurchaseStatus.purchased,
+            ),
+          )
+          .timeout(const Duration(seconds: 10))
+          .catchError((_) => <PurchaseDetails>[]); // timeout or error: invalidate anyway
     }
+    ref.invalidateSelf();
+    ref.invalidate(premiumExpiryProvider);
   }
 
   Future<bool> purchasePlan(String planType) async {

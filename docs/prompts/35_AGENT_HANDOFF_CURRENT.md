@@ -1,8 +1,22 @@
-# 35 — Актуальный handoff для всех агентов (12.07.2026)
+# 35 — Актуальный handoff для всех агентов (13.07.2026)
 
 Используй этот файл **вместе с** `00_PROJECT_CONTEXT.md`.
 
-## GLM Fix Session (12.07.2026) — ✅ ЗАВЕРШЕНО
+## GLM Fix Session 2 (13.07.2026) — ✅ ЗАВЕРШЕНО
+Все фиксы из `54_FIX_PROMPT.md` выполнены. Подробности: `55_GLM_FIX_REPORT.md`.
+- **#47** (Critical): IndexError на пустом имени — guard `person.name.isEmpty`
+- **#46** (High): `restorePurchases()` — подписка на purchaseStream вместо `Future.delayed`
+- **#45**: server-side верификация — подтверждён TODO, понижен до 🟠 High
+- **Sweep**: 29 `withValues` → `withOpacity` (Flutter 3.22.3 не поддерживает `withValues`)
+- **Sweep**: hardcoded `Colors.*` → `colorScheme.*` (app_theme, glass_card, premium_gate)
+- **Sweep**: hardcoded строки → `AppStrings` (biometric_subtitle, language_ru/en)
+- **#44**: null profile guard в `selectedSnapshotProvider`
+- **#48/#49/#50**: `await _save()` вместо fire-and-forget
+- **#52**: `_parseId` guard на `startsWith('p_')`
+- **Дополнительно**: структурная ошибка `purchase_provider.dart` (лишняя `}`), `paywall_screen.dart` invalid const
+- `flutter analyze` ✅ 0 issues, `flutter test` ✅ 32/32
+
+## GLM Fix Session 1 (12.07.2026) — ✅ ЗАВЕРШЕНО
 Все 3 приоритета из `51_GLM_FIX_PROMPT.md` выполнены. Подробности: `53_GLM_FIX_REPORT.md`.
 - **P1** (функциональные): DST off-by-one (#5), mounted check (#11), UI overflow (#12)
 - **P2** (theme colors): 5 файлов + 6 семантических констант в AppColors

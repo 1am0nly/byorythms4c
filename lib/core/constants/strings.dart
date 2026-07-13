@@ -275,4 +275,7 @@ class AppStringsLocale {
           'эмоций, интеллекта и интуиции. '
           'Скачай по ссылке и используй мой код: $code\n'
           'https://biorhythms.app/invite/$code';
+  String get biometricSubtitle => _isEn ? AppStringsEn.biometricSubtitle : 'Face ID / Отпечаток';
+  String get languageRussian => _isEn ? AppStringsEn.languageRussian : 'Рус';
+  String get languageEnglish => _isEn ? AppStringsEn.languageEnglish : 'EN';
 }

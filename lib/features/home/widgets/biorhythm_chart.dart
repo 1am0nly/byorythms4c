@@ -266,8 +266,8 @@ class _ChartLegend extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     color: isEnabled
-                        ? theme.colorScheme.onSurfaceVariant
-                        : theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+                      ? theme.colorScheme.onSurfaceVariant
+                      : theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
                     fontWeight: FontWeight.w500,
                     decoration: isEnabled ? TextDecoration.none : TextDecoration.lineThrough,
                   ),
