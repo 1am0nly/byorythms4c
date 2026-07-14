@@ -46,6 +46,8 @@ class AppStringsEn {
   static const String yourReferralCode = 'Your Referral Code';
   static const String share = 'Share';
   static const String friendsInvited = 'Friends Invited';
+  static const String enterReferralCode = 'Enter Referral Code';
+  static const String notSpecified = 'Not specified';
   static const String todaySummary = 'Today';
   static const String phaseRising = 'Rising';
   static const String phaseFalling = 'Falling';
@@ -110,6 +112,8 @@ class AppStringsEn {
   static const String onboardingCycleBody = 'Human life moves through four biorhythm cycles. Track energy peaks, rest phases, intuition shifts, and critical transition days on an interactive chart. Set up convenient daily summary notifications.';
   static const String onboardingPrivacyTitle = 'Privacy First';
   static const String onboardingPrivacyBody = 'Your personal life stays yours. Names and birth dates are stored exclusively on your device and never sent to the internet. You can protect profile access with biometrics.';
+  static const String onboardingReferralTitle = 'Share the App';
+  static const String onboardingReferralBody = 'Invite friends and get extended access to premium features. Share your referral code and enjoy the app together.';
   static const String next = 'Next';
   static const String addFirstProfile = 'Add First Profile';
   static const String skip = 'Skip';

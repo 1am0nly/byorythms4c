@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.ignasev.biorhythms_flutter",
+    "sha256_cert_fingerprints": [
+      "39:41:52:80:D3:06:52:CE:54:87:9A:D8:F2:9C:86:90:B7:5E:69:B8:A7:BC:A1:B0:36:B2:8A:00:EB:72:10:23"
+    ]
+  }
+}]

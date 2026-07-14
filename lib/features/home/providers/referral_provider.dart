@@ -9,6 +9,12 @@ final referralCodeProvider = FutureProvider<String>((ref) async {
   return await ReferralService.getOrCreateCode(dao);
 });
 
+/// Код, введённый пользователем (или полученный из deep link)
+final enteredReferralCodeProvider = FutureProvider<String?>((ref) async {
+  final dao = ref.watch(settingsDaoProvider);
+  return await dao.get('enteredReferralCode');
+});
+
 final referralCountProvider = StateNotifierProvider<ReferralCountNotifier, int>(
     (ref) {
   final dao = ref.watch(settingsDaoProvider);
@@ -57,10 +63,15 @@ class ReferralService {
         'Приложение «Биоритмы» — твой ежедневный трекер энергии, '
         'эмоций, интеллекта и интуиции. '
         'Скачай по ссылке и используй мой код: $code\n'
-        'https://biorhythms.app/invite/$code';
+        'https://1am0nly.github.io/byorythms4c/invite/$code';
   }
 
   static Future<void> share(String code, {required String subject, required String text}) async {
     await Share.share(text, subject: subject);
+  }
+
+  /// Сохраняет введённый пользователем (или из deep link) реферальный код
+  static Future<void> saveEnteredCode(SettingsDao dao, String code) async {
+    await dao.set('enteredReferralCode', code.toUpperCase());
   }
 }

@@ -1,10 +1,14 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:local_auth/local_auth.dart';
+
 import 'app.dart';
 import 'core/constants/strings.dart';
+import 'core/services/analytics_service.dart';
+import 'core/services/deep_link_service.dart';
 import 'core/theme/app_theme.dart';
 import 'data/database/providers.dart';
 import 'features/onboarding/providers/has_seen_onboarding_provider.dart';
@@ -15,10 +19,10 @@ import 'features/settings/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-
   final container = ProviderContainer();
   final dao = container.read(settingsDaoProvider);
   final savedLocale = await dao.get('locale') ?? 'ru';
@@ -26,15 +30,16 @@ void main() async {
   if (savedLocale != 'en') {
     await initializeDateFormatting('en');
   }
-
   await container.read(hasSeenOnboardingProvider.future);
   await container.read(themeModeProvider.future);
   await container.read(localeProvider.future);
   await container.read(isPremiumProvider.future);
-
   final notifService = container.read(notificationServiceProvider);
   await notifService.initialize();
-
+  // Инициализируем deep link сервис (реферальные ссылки)
+  final analytics = AnalyticsService();
+  DeepLinkService(analytics);
+  await DeepLinkService.applyPendingCode(dao, analytics: analytics);
   final s = AppStringsLocale(savedLocale);
 
   // ВАЖНО: Автопуш через periodicallyShow убран (промпт 41/43).
@@ -192,3 +197,4 @@ class _BiometricLockAppState extends State<BiometricLockApp> {
     );
   }
 }
+

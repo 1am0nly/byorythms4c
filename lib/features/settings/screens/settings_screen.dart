@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -15,6 +16,20 @@ import 'package:biorhythms_flutter/features/settings/providers/cycle_visibility_
 import 'package:biorhythms_flutter/features/settings/providers/locale_provider.dart';
 import 'package:biorhythms_flutter/features/settings/providers/theme_provider.dart';
 import 'package:biorhythms_flutter/features/settings/services/notification_service.dart';
+import 'package:biorhythms_flutter/data/database/providers.dart';
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
+  }
+}
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -270,6 +285,21 @@ class SettingsScreen extends ConsumerWidget {
                   child: Text(s.share),
                 ),
               ),
+              // Поле для ввода чужого реферального кода
+              ListTile(
+                title: Text(s.enterReferralCode),
+                subtitle: Consumer(
+                  builder: (context, ref, _) {
+                    final enteredCodeAsync = ref.watch(enteredReferralCodeProvider);
+                    final enteredCode = enteredCodeAsync.value ?? '';
+                    return Text(enteredCode.isEmpty ? s.notSpecified : enteredCode);
+                  },
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () => _showEnterReferralCodeDialog(context, ref),
+                ),
+              ),
               ListTile(
                 title: Text(s.friendsInvited),
                 subtitle: Text(s.premiumDaysEarned.replaceFirst('{count}', '${referralCount * 7}')),
@@ -435,3 +465,56 @@ class _PremiumDaysLeft extends ConsumerWidget {
     );
   }
 }
+
+Future<void> _showEnterReferralCodeDialog(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final s = AppStrings.of(context);
+    final dao = ref.read(settingsDaoProvider);
+    final controller = TextEditingController();
+
+    // Загружаем текущий код
+    final currentCode = await ref.read(enteredReferralCodeProvider.future);
+    if (currentCode != null) {
+      controller.text = currentCode;
+    }
+
+    if (!context.mounted) return;
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(s.enterReferralCode),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: 'ABCD1234',
+            labelText: s.enterReferralCode,
+          ),
+          inputFormatters: [
+            UpperCaseTextFormatter(),
+            FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9]')),
+          ],
+          maxLength: 8,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(s.cancel),
+          ),
+          TextButton(
+            onPressed: () async {
+              final code = controller.text.trim();
+              if (code.isNotEmpty) {
+                await ReferralService.saveEnteredCode(dao, code);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
+              }
+            },
+            child: Text(s.save),
+          ),
+        ],
+      ),
+    );
+  }

@@ -160,6 +160,8 @@ class AppStringsLocale {
   String get onboardingCycleBody => _isEn ? "Human life moves through four biorhythm cycles. Track energy peaks, rest phases, intuition shifts, and critical transition days on an interactive chart. Set up convenient daily summary notifications." : 'Жизнь человека движется по четырем биоритмическим циклам. Следите за подъемами энергии, фазами отдыха, изменениями интуиции и «критическими днями» на интерактивном графике. Настраивайте удобные ежедневные уведомления-сводки.';
   String get onboardingPrivacyTitle => _isEn ? 'Privacy First' : 'Приватность в приоритете';
   String get onboardingPrivacyBody => _isEn ? 'Your personal life stays yours. Names and birth dates are stored exclusively on your device and never sent to the internet. You can protect profile access with biometrics.' : 'Ваша личная жизнь остается только вашей. Имена и даты рождения хранятся исключительно на вашем устройстве и никогда не передаются в интернет. Вы можете защитить доступ к профилям с помощью биометрии.';
+  String get onboardingReferralTitle => _isEn ? 'Share the App' : 'Приглашайте друзей';
+  String get onboardingReferralBody => _isEn ? 'Invite friends and get extended access to premium features. Share your referral code and enjoy the app together.' : 'Приглашайте друзей и получайте расширенный доступ к премиум-функциям. Делитесь реферальным кодом и наслаждайтесь приложением вместе.';
   String get next => _isEn ? 'Next' : 'Далее';
   String get addFirstProfile => _isEn ? 'Add First Profile' : 'Добавить первый профиль';
   String get skip => _isEn ? 'Skip' : 'Пропустить';
@@ -264,17 +266,19 @@ class AppStringsLocale {
   String get premiumActive => _isEn ? AppStringsEn.premiumActive : 'Premium активен';
   String get premiumSection => _isEn ? AppStringsEn.premiumSection : 'PREMIUM';
   String get manage => _isEn ? AppStringsEn.manage : 'Управление';
+  String get enterReferralCode => _isEn ? AppStringsEn.enterReferralCode : 'Ввести реферальный код';
+  String get notSpecified => _isEn ? AppStringsEn.notSpecified : 'Не указано';
   String shareInviteText(String code) => _isEn
       ? 'Track your biorhythms with me! '
           'Biorhythms is your daily tracker of energy, '
           'emotions, intellect, and intuition. '
           'Download and use my code: $code\n'
-          'https://biorhythms.app/invite/$code'
+          'https://1am0nly.github.io/byorythms4c/invite/$code'
       : 'Следи за своими биоритмами вместе со мной! '
           'Приложение «Биоритмы» — твой ежедневный трекер энергии, '
           'эмоций, интеллекта и интуиции. '
           'Скачай по ссылке и используй мой код: $code\n'
-          'https://biorhythms.app/invite/$code';
+          'https://1am0nly.github.io/byorythms4c/invite/$code';
   String get biometricSubtitle => _isEn ? AppStringsEn.biometricSubtitle : 'Face ID / Отпечаток';
   String get languageRussian => _isEn ? AppStringsEn.languageRussian : 'Рус';
   String get languageEnglish => _isEn ? AppStringsEn.languageEnglish : 'EN';

@@ -6,6 +6,7 @@ import 'package:biorhythms_flutter/core/constants/strings.dart';
 import 'package:biorhythms_flutter/data/models/person.dart';
 import 'package:biorhythms_flutter/features/home/providers/person_providers.dart';
 import 'package:biorhythms_flutter/features/onboarding/providers/has_seen_onboarding_provider.dart';
+import 'package:biorhythms_flutter/core/services/analytics_service.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -42,6 +43,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         title: s.onboardingPrivacyTitle,
         description: s.onboardingPrivacyBody,
         icon: Icons.lock_outline,
+      ),
+      _OnboardingPageData(
+        title: s.onboardingReferralTitle,
+        description: s.onboardingReferralBody,
+        icon: Icons.share,
       ),
     ];
 
@@ -113,9 +119,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 width: double.infinity,
                 child: FilledButton(
                   child: Text(
-                    _currentPage < pages.length - 1
-                        ? s.next
-                        : s.addFirstProfile,
+                    _currentPage < pages.length - 1 ? s.next : s.addFirstProfile,
                   ),
                   onPressed: () {
                     if (_currentPage < pages.length - 1) {
@@ -182,8 +186,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       labelText: s.birthDate,
                       border: const OutlineInputBorder(),
                     ),
-                      child: Text(
-                        DateFormat('d MMMM yyyy', Localizations.localeOf(ctx).languageCode).format(selectedDate),
+                    child: Text(
+                      DateFormat('d MMMM yyyy', Localizations.localeOf(ctx).languageCode)
+                          .format(selectedDate),
                     ),
                   ),
                 ),
@@ -201,12 +206,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 onPressed: () {
                   if (nameController.text.trim().isEmpty) return;
                   ref.read(personRepositoryProvider).add(
-                    Person(
-                      id: '',
-                      name: nameController.text.trim(),
-                      birthDate: selectedDate,
-                    ),
-                  );
+                        Person(
+                          id: '',
+                          name: nameController.text.trim(),
+                          birthDate: selectedDate,
+                        ),
+                      );
                   Navigator.of(ctx).pop();
                   _finishOnboarding();
                 },
@@ -226,6 +231,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     if (mounted) {
       context.go('/');
     }
+    AnalyticsService().logOnboardingCompleted();
   }
 }
 
@@ -240,3 +246,6 @@ class _OnboardingPageData {
     required this.icon,
   });
 }
+
+
+
